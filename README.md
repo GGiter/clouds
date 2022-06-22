@@ -16,3 +16,4 @@ Change configuration in solution to *Release* to compile.
 # Images
 
 ![cloud_screenshot](images/cloud_screenshot.png)
+![cloud_screenshot2](images/cloud_screenshot2.png)
