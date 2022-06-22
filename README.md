@@ -1,5 +1,7 @@
 # clouds
 
+## The project is still in progress.
+
 Project was tested only on Windows machines.
 
 # Installation
