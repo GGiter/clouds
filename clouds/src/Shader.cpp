@@ -1,5 +1,5 @@
 #include "Shader.h"
-#include "Renderer.h"
+#include "Util.h"
 
 #include <iostream>
 #include <fstream>
@@ -7,11 +7,12 @@
 #include <sstream>
 #include <malloc.h>
 
-Shader::Shader(const std::string& filepath)
-	: m_FilePath(filepath), m_RendererID(0)
+#include "Shadinclude.h"
+
+Shader::Shader(const std::string& vertexFilePath, const std::string& fragmentFilePath)
+	: m_vertexFilePath(vertexFilePath), m_fragmentFilePath(fragmentFilePath), m_RendererID(0)
 {
-    ShaderProgramSource source = ParseShader(filepath);
-    m_RendererID = CreateShader(source.VertexSource, source.FragmentSource); 
+    m_RendererID = CreateShader(Shadinclude::load(vertexFilePath), Shadinclude::load(fragmentFilePath));
 }
 
 Shader::~Shader()
@@ -34,7 +35,32 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float f2,
     GLCall(glUniform4f(GetUniformLocation(name), v0, v1, f2, f3));
 }
 
-unsigned int Shader::GetUniformLocation(const std::string& name)
+void Shader::SetUniform2f(const std::string& name, float v0, float v1)
+{
+    GLCall(glUniform2f(GetUniformLocation(name), v0, v1));
+}
+
+void Shader::SetUniformVec3f(const std::string& name, const glm::vec3& vector)
+{
+    GLCall(glUniform3f(GetUniformLocation(name), vector.x, vector.y, vector.z));
+}
+
+void Shader::SetUniform1i(const std::string& name, int value)
+{
+    GLCall(glUniform1i(GetUniformLocation(name), value));
+}
+
+void Shader::SetUniform1f(const std::string& name, float value)
+{
+    GLCall(glUniform1f(GetUniformLocation(name), value));
+}
+
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+{
+    GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
+}
+
+int Shader::GetUniformLocation(const std::string& name)
 {
     if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
         return m_UniformLocationCache[name];
@@ -48,34 +74,17 @@ unsigned int Shader::GetUniformLocation(const std::string& name)
     return location;
 }
 
-ShaderProgramSource Shader::ParseShader(const std::string& filepath)
+std::string Shader::ReadShader(const std::string filePath)
 {
-    std::ifstream stream(filepath);
-
-    enum class ShaderType
+    std::ifstream f(filePath);
+    std::string str;
+    if (f)
     {
-        NONE = -1, VERTEX = 0, FRAGMENT = 1
-    };
-
-    std::string line;
-    std::stringstream ss[2];
-    ShaderType type = ShaderType::NONE;
-    while (getline(stream, line))
-    {
-        if (line.find("#shader") != std::string::npos)
-        {
-            if (line.find("vertex") != std::string::npos)
-                type = ShaderType::VERTEX;
-            else if (line.find("fragment") != std::string::npos)
-                type = ShaderType::FRAGMENT;
-        }
-        else
-        {
-            ss[(int)type] << line << '\n';
-        }
+        std::ostringstream ss;
+        ss << f.rdbuf();
+        str = ss.str();
     }
-
-    return { ss[0].str(), ss[1].str() };
+    return str;
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)

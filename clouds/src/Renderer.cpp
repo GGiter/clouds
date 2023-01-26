@@ -1,25 +1,13 @@
 #include "Renderer.h"
-#include <iostream>
-
-void GLClearError()
-{
-    while (glGetError != GL_NO_ERROR);
-}
-
-bool GLLogCall(const char* function, const char* file, int line)
-{
-    while (GLenum error = glGetError())
-    {
-        std::cout << "[OPenGL error] (" << error << "): " << function << " " <<
-            file << ":" << line << std::endl;
-        return false;
-    }
-    return true;
-}
 
 void Renderer::Clear()
 {
-    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+	GLCall(glClear(GL_COLOR_BUFFER_BIT));
+}
+
+void Renderer::UpdateViewport(float Width, float Height)
+{
+    GLCall(glViewport(0, 0, Width, Height));
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const

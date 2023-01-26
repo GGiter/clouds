@@ -1,7 +1,5 @@
 # clouds
 
-## The project is still in progress.
-
 Project was tested only on Windows machines.
 
 # Installation
@@ -14,8 +12,3 @@ After that in console type in:
 *vcpkg integrate install*
 
 Change configuration in solution to *Release* to compile.
-
-# Images
-
-![cloud_screenshot](images/cloud_screenshot.png)
-![cloud_screenshot2](images/cloud_screenshot2.png)
