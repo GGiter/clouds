@@ -1,0 +1,40 @@
+Shader: depth
+  Average Time: 0.114518 ms
+  Max Time: 0.40768 ms
+  Min Time: 0.01472 ms
+  Total Executions: 172
+Shader: shadow-mapping-depth
+  Average Time: 0.0816902 ms
+  Max Time: 0.32128 ms
+  Min Time: 0.00032 ms
+  Total Executions: 172
+Shader: mesh
+  Average Time: 2.6962 ms
+  Max Time: 10.7462 ms
+  Min Time: 0.00912 ms
+  Total Executions: 172
+Shader: glass
+  Average Time: 0.0175702 ms
+  Max Time: 0.01904 ms
+  Min Time: 0.01568 ms
+  Total Executions: 43
+Shader: Procedural
+Average Time: 20.6601 ms
+Max Time: 22.4523 ms
+Min Time: 0.33088 ms
+Shader: velocity
+Average Time: 0.0101818 ms
+Max Time: 0.01152 ms
+Min Time: 0.00304 ms
+Shader: depth
+Average Time: 0.000752727 ms
+Max Time: 0.00544 ms
+Min Time: 0.00032 ms
+Shader: water-ripple
+Average Time: 0.149436 ms
+Max Time: 0.156 ms
+Min Time: 0.148 ms
+Shader: fxaa
+Average Time: 0.772669 ms
+Max Time: 0.79056 ms
+Min Time: 0.43296 ms

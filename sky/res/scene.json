@@ -1,0 +1,28 @@
+{
+    "window": {
+        "objFilePath": "res/objects/window/window.fbx",
+        "position": [0.3, 0.0, 0.0],
+        "scale": [0.1, 0.1, 0.1],
+		"rotation": [1.57, 4.71, 0.0]
+    },
+    "crate": {
+        "objFilePath": "res/objects/crate.obj",
+        "position": [0.0, 0.01, 0.0],
+        "scale": [0.1, 0.1, 0.1]
+    },
+    "cone": {
+        "objFilePath": "res/objects/cone/cone.obj",
+        "position": [0.0, 0.0, 0.0],
+        "scale": [10.0, 10.0, 10.0]
+    },
+    "ground": {
+        "objFilePath": "res/objects/ground/ground.fbx",
+        "position": [0.0, -0.1, 0.0],
+        "scale": [2.0, 1.0, 2.0]
+    },
+    "sphere": {
+        "objFilePath": "res/objects/sphere/sphere.fbx",
+        "position": [-0.3, 0.0, 0.0],
+        "scale": [0.1, 0.1, 0.1]
+    }
+}
