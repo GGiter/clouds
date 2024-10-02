@@ -1,6 +1,7 @@
 # clouds
-
-Project was tested only on Windows machines and is WIP.
+The main goal of the project is to try render realistic sky with atmospheric effects fully procedurally (using SDFs, raymarching etc). <br />
+Project was tested only on Windows machines and is WIP. <br />
+In images folder you can find screenshots from current version of the program.
 
 # Installation
 
