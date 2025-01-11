@@ -1,0 +1,68 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Generic_2_Frames_Trim2
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Generic_2_Frames_Trim_BaseColor.dds
+map_Ks Textures/Generic_2_Frames_Trim_Specular.dds
+map_d Textures/Generic_2_Frames_Trim_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Generic_2_Frames_Trim_Normal.dds
+
+newmtl Generic_2_Glass_Roof_Awning_Red2
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Generic_2_Glass_Roof_Awning_Red_BaseColor.dds
+map_Ks Textures/Generic_2_Glass_Roof_Awning_Red_Specular.dds
+map_d Textures/Generic_2_Glass_Roof_Awning_Red_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Generic_2_Glass_Roof_Awning_Red_Normal.dds
+
+newmtl Generic_2_Struts_Blue
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Generic_2_Struts_Blue_BaseColor.dds
+map_Ks Textures/Generic_2_Struts_Blue_Specular.dds
+map_d Textures/Generic_2_Struts_Blue_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Generic_2_Struts_Blue_Normal.dds
+
+newmtl Generic_2_Struts_Green1
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Generic_2_Struts_Green_BaseColor.dds
+map_Ks Textures/Generic_2_Struts_Green_Specular.dds
+map_d Textures/Generic_2_Struts_Green_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Generic_2_Struts_Green_Normal.dds
+
+newmtl Generic_2_Struts_Red1
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Generic_2_Struts_Red_BaseColor.dds
+map_Ks Textures/Generic_2_Struts_Red_Specular.dds
+map_d Textures/Generic_2_Struts_Red_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Generic_2_Struts_Red_Normal.dds
+
+newmtl Roof3
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Roof_BaseColor.dds
+map_Ks Textures/Roof_Specular.dds
+map_d Textures/Roof_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Roof_Normal.dds

@@ -1,0 +1,35 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Grass_Patterned
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Grass_Patterned_BaseColor.dds
+map_Ks Textures/Grass_Patterned_Specular.dds
+map_d Textures/Grass_Patterned_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Grass_Patterned_Normal.dds
+
+newmtl PineForestFloor
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/PineForestFloor_BaseColor.dds
+map_Ks Textures/PineForestFloor_Specular.dds
+map_d Textures/PineForestFloor_BaseColor.dds
+map_Bump -bm 1.000000 Textures/PineForestFloor_Normal.dds
+
+newmtl trampled_sand
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/trampled_sand_BaseColor.dds
+map_Ks Textures/trampled_sand_Specular.dds
+map_d Textures/trampled_sand_BaseColor.dds
+map_Bump -bm 1.000000 Textures/trampled_sand_Normal.dds

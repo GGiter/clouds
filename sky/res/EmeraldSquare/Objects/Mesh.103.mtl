@@ -1,0 +1,68 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl hotel_arch
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/hotel_arch_BaseColor.dds
+map_Ks Textures/hotel_arch_Specular.dds
+map_d Textures/hotel_arch_BaseColor.dds
+map_Bump -bm 1.000000 Textures/hotel_arch_Normal.dds
+
+newmtl hotel_deco_awnings
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/hotel_deco_awnings_BaseColor.dds
+map_Ks Textures/hotel_deco_awnings_Specular.dds
+map_d Textures/hotel_deco_awnings_BaseColor.dds
+map_Bump -bm 1.000000 Textures/hotel_deco_awnings_Normal.dds
+
+newmtl hotel_frames
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/hotel_frames_BaseColor.dds
+map_Ks Textures/hotel_frames_Specular.dds
+map_d Textures/hotel_frames_BaseColor.dds
+map_Bump -bm 1.000000 Textures/hotel_frames_Normal.dds
+
+newmtl hotel_moulding
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/hotel_moulding_BaseColor.dds
+map_Ks Textures/hotel_moulding_Specular.dds
+map_d Textures/hotel_moulding_BaseColor.dds
+map_Bump -bm 1.000000 Textures/hotel_moulding_Normal.dds
+
+newmtl hotel_roof
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/hotel_roof_BaseColor.dds
+map_Ks Textures/hotel_roof_Specular.dds
+map_d Textures/hotel_roof_BaseColor.dds
+map_Bump -bm 1.000000 Textures/hotel_roof_Normal.dds
+
+newmtl hotel_windows
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/hotel_windows_BaseColor.dds
+map_Ks Textures/hotel_windows_Specular.dds
+map_d Textures/hotel_windows_BaseColor.dds
+map_Bump -bm 1.000000 Textures/hotel_windows_Normal.dds

@@ -1,0 +1,46 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Cap_03
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Cap_03_BaseColor.dds
+map_Ks Textures/Cap_03_Specular.dds
+map_d Textures/Cap_03_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Cap_03_Normal.dds
+
+newmtl EuropeanLindenBark
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/EuropeanLindenBark_BaseColor.dds
+map_Ks Textures/EuropeanLindenBark_Specular.dds
+map_d Textures/EuropeanLindenBark_BaseColor.dds
+map_Bump -bm 1.000000 Textures/EuropeanLindenBark_Normal.dds
+
+newmtl EuropeanLindenLeaf.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/EuropeanLindenLeaf_BaseColor.dds
+map_Ks Textures/EuropeanLindenLeaf_Specular.dds
+map_d Textures/EuropeanLindenLeaf_BaseColor.dds
+map_Bump -bm 1.000000 Textures/EuropeanLindenLeaf_Normal.dds
+
+newmtl EuropeanLindenLeaf_2.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/EuropeanLindenLeaf_2_BaseColor.dds
+map_Ks Textures/EuropeanLindenLeaf_2_Specular.dds
+map_d Textures/EuropeanLindenLeaf_2_BaseColor.dds
+map_Bump -bm 1.000000 Textures/EuropeanLindenLeaf_2_Normal.dds

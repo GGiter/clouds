@@ -1,0 +1,24 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Road4
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Road_BaseColor.dds
+map_Ks Textures/Road_Specular.dds
+map_d Textures/Road_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Road_Normal.dds
+
+newmtl foliage_ground_cover4
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/foliage_ground_cover_BaseColor.dds
+map_Ks Textures/foliage_ground_cover_Specular.dds
+map_d Textures/foliage_ground_cover_BaseColor.dds
+map_Bump -bm 1.000000 Textures/foliage_ground_cover_Normal.dds

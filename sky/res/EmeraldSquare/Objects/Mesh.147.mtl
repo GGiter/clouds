@@ -1,0 +1,57 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Bark.001
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Bark_BaseColor.dds
+map_Ks Textures/Bark_Specular.dds
+map_d Textures/Bark_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Bark_Normal.dds
+
+newmtl Cap_04
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Cap_03_BaseColor.dds
+map_Ks Textures/Cap_03_Specular.dds
+map_d Textures/Cap_03_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Cap_03_Normal.dds
+
+newmtl Cards.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Cards_BaseColor.dds
+map_Ks Textures/Cards_Specular.dds
+map_d Textures/Cards_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Cards_Normal.dds
+
+newmtl Leaves.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Leaves_BaseColor.dds
+map_Ks Textures/Leaves_Specular.dds
+map_d Textures/Leaves_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Leaves_Normal.dds
+
+newmtl Leaves_2.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Leaves_2_BaseColor.dds
+map_Ks Textures/Leaves_2_Specular.dds
+map_d Textures/Leaves_2_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Leaves_2_Normal.dds

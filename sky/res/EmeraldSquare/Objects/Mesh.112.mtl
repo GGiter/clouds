@@ -1,0 +1,68 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Roof2
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Roof_BaseColor.dds
+map_Ks Textures/Roof_Specular.dds
+map_d Textures/Roof_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Roof_Normal.dds
+
+newmtl arch_1f
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/arch_1f_BaseColor.dds
+map_Ks Textures/arch_1f_Specular.dds
+map_d Textures/arch_1f_BaseColor.dds
+map_Bump -bm 1.000000 Textures/arch_1f_Normal.dds
+
+newmtl arch_midlevel_door
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/arch_midlevel_door_BaseColor.dds
+map_Ks Textures/arch_midlevel_door_Specular.dds
+map_d Textures/arch_midlevel_door_BaseColor.dds
+map_Bump -bm 1.000000 Textures/arch_midlevel_door_Normal.dds
+
+newmtl frames
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/frames_BaseColor.dds
+map_Ks Textures/frames_Specular.dds
+map_d Textures/frames_BaseColor.dds
+map_Bump -bm 1.000000 Textures/frames_Normal.dds
+
+newmtl glass
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/glass_BaseColor.dds
+map_Ks Textures/glass_Specular.dds
+map_d Textures/glass_BaseColor.dds
+map_Bump -bm 1.000000 Textures/glass_Normal.dds
+
+newmtl moulding_signs
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/moulding_signs_BaseColor.dds
+map_Ks Textures/moulding_signs_Specular.dds
+map_d Textures/moulding_signs_BaseColor.dds
+map_Bump -bm 1.000000 Textures/moulding_signs_Normal.dds

@@ -1,0 +1,24 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Emissive_Light_Inst
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Emissive_Light_Inst_BaseColor.dds
+map_Ks Textures/Emissive_Light_Inst_Specular.dds
+map_Ke Textures/Emissive_Light_Inst_Emissive.dds
+map_d Textures/Emissive_Light_Inst_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Emissive_Light_Inst_Normal.dds
+
+newmtl Signal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Signal_BaseColor.dds
+map_Ks Textures/Signal_Specular.dds
+map_Ke Textures/Signal_Emissive.dds
+map_d Textures/Signal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Signal_Normal.dds

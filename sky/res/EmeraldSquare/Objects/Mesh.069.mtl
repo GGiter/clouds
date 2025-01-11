@@ -1,0 +1,145 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Sheleg_1F_Concrete
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Sheleg_1F_Concrete_BaseColor.dds
+map_Ks Textures/Sheleg_1F_Concrete_Specular.dds
+map_d Textures/Sheleg_1F_Concrete_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Sheleg_1F_Concrete_Normal.dds
+
+newmtl Sheleg_2F_Concrete
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Sheleg_2F_Concrete_BaseColor.dds
+map_Ks Textures/Sheleg_2F_Concrete_Specular.dds
+map_d Textures/Sheleg_2F_Concrete_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Sheleg_2F_Concrete_Normal.dds
+
+newmtl Sheleg_Glass_Sign
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Sheleg_Glass_Sign_BaseColor.dds
+map_Ks Textures/Sheleg_Glass_Sign_Specular.dds
+map_d Textures/Sheleg_Glass_Sign_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Sheleg_Glass_Sign_Normal.dds
+
+newmtl Sheleg_Trim
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Sheleg_Trim_BaseColor.dds
+map_Ks Textures/Sheleg_Trim_Specular.dds
+map_d Textures/Sheleg_Trim_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Sheleg_Trim_Normal.dds
+
+newmtl Sheleg_Wood_Metal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Sheleg_Wood_Metal_BaseColor.dds
+map_Ks Textures/Sheleg_Wood_Metal_Specular.dds
+map_d Textures/Sheleg_Wood_Metal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Sheleg_Wood_Metal_Normal.dds
+
+newmtl Tower_Moulding_Big
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Moulding_Big_BaseColor.dds
+map_Ks Textures/Tower_Moulding_Big_Specular.dds
+map_d Textures/Tower_Moulding_Big_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Moulding_Big_Normal.dds
+
+newmtl Tower_Moulding_Observation
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Moulding_Observation_BaseColor.dds
+map_Ks Textures/Tower_Moulding_Observation_Specular.dds
+map_d Textures/Tower_Moulding_Observation_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Moulding_Observation_Normal.dds
+
+newmtl Tower_Moulding_Roof
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Moulding_Roof_BaseColor.dds
+map_Ks Textures/Tower_Moulding_Roof_Specular.dds
+map_d Textures/Tower_Moulding_Roof_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Moulding_Roof_Normal.dds
+
+newmtl Tower_Observation_Arch
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Observation_Arch_BaseColor.dds
+map_Ks Textures/Tower_Observation_Arch_Specular.dds
+map_d Textures/Tower_Observation_Arch_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Observation_Arch_Normal.dds
+
+newmtl Tower_Railing
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Railing_BaseColor.dds
+map_Ks Textures/Tower_Railing_Specular.dds
+map_d Textures/Tower_Railing_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Railing_Normal.dds
+
+newmtl Tower_Roof
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Roof_BaseColor.dds
+map_Ks Textures/Tower_Roof_Specular.dds
+map_d Textures/Tower_Roof_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Roof_Normal.dds
+
+newmtl Tower_Top
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Top_BaseColor.dds
+map_Ks Textures/Tower_Top_Specular.dds
+map_d Textures/Tower_Top_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Top_Normal.dds
+
+newmtl Tower_Windows_Ball
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Tower_Windows_Ball_BaseColor.dds
+map_Ks Textures/Tower_Windows_Ball_Specular.dds
+map_d Textures/Tower_Windows_Ball_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Tower_Windows_Ball_Normal.dds

@@ -1,0 +1,35 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Boston_Fern_Fiddlehead.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Boston_Fern_Fiddlehead_BaseColor.dds
+map_Ks Textures/Boston_Fern_Fiddlehead_Specular.dds
+map_d Textures/Boston_Fern_Fiddlehead_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Boston_Fern_Fiddlehead_Normal.dds
+
+newmtl Boston_Fern_Leaflets_1.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Boston_Fern_Leaflets_1_BaseColor.dds
+map_Ks Textures/Boston_Fern_Leaflets_1_Specular.dds
+map_d Textures/Boston_Fern_Leaflets_1_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Boston_Fern_Leaflets_1_Normal.dds
+
+newmtl Boston_Fern_Stem
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Boston_Fern_Stem_BaseColor.dds
+map_Ks Textures/Boston_Fern_Stem_Specular.dds
+map_d Textures/Boston_Fern_Stem_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Boston_Fern_Stem_Normal.dds

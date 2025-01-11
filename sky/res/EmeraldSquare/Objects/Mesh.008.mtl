@@ -1,0 +1,46 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Cap_02
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Cap_02_BaseColor.dds
+map_Ks Textures/Cap_02_Specular.dds
+map_d Textures/Cap_02_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Cap_02_Normal.dds
+
+newmtl JapaneseMapleBark
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/JapaneseMapleBark_BaseColor.dds
+map_Ks Textures/JapaneseMapleBark_Specular.dds
+map_d Textures/JapaneseMapleBark_BaseColor.dds
+map_Bump -bm 1.000000 Textures/JapaneseMapleBark_Normal.dds
+
+newmtl JapaneseMapleLeaf_1.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/JapaneseMapleLeaf_1_BaseColor.dds
+map_Ks Textures/JapaneseMapleLeaf_1_Specular.dds
+map_d Textures/JapaneseMapleLeaf_1_BaseColor.dds
+map_Bump -bm 1.000000 Textures/JapaneseMapleLeaf_1_Normal.dds
+
+newmtl JapaneseMapleLeaf_2.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/JapaneseMapleLeaf_2_BaseColor.dds
+map_Ks Textures/JapaneseMapleLeaf_2_Specular.dds
+map_d Textures/JapaneseMapleLeaf_2_BaseColor.dds
+map_Bump -bm 1.000000 Textures/JapaneseMapleLeaf_2_Normal.dds

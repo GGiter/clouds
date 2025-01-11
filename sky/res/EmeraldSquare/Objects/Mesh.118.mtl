@@ -1,0 +1,46 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Bark
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Bark_BaseColor.dds
+map_Ks Textures/Bark_Specular.dds
+map_d Textures/Bark_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Bark_Normal.dds
+
+newmtl Hedge_Base.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Hedge_Base_BaseColor.dds
+map_Ks Textures/Hedge_Base_Specular.dds
+map_d Textures/Hedge_Base_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Hedge_Base_Normal.dds
+
+newmtl Hedge_Leaves_1.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Hedge_Leaves_1_BaseColor.dds
+map_Ks Textures/Hedge_Leaves_1_Specular.dds
+map_d Textures/Hedge_Leaves_1_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Hedge_Leaves_1_Normal.dds
+
+newmtl Hedge_Leaves_3.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Hedge_Leaves_3_BaseColor.dds
+map_Ks Textures/Hedge_Leaves_3_Specular.dds
+map_d Textures/Hedge_Leaves_3_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Hedge_Leaves_3_Normal.dds

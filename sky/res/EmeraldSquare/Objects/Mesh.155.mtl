@@ -1,0 +1,46 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Cap_03.001
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Cap_02_BaseColor.dds
+map_Ks Textures/Cap_02_Specular.dds
+map_d Textures/Cap_02_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Cap_02_Normal.dds
+
+newmtl WhiteOakBark
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/WhiteOakBark_BaseColor.dds
+map_Ks Textures/WhiteOakBark_Specular.dds
+map_d Textures/WhiteOakBark_BaseColor.dds
+map_Bump -bm 1.000000 Textures/WhiteOakBark_Normal.dds
+
+newmtl White_Oak_Leaves_Hero_1.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/White_Oak_Leaves_Hero_1_BaseColor.dds
+map_Ks Textures/White_Oak_Leaves_Hero_1_Specular.dds
+map_d Textures/White_Oak_Leaves_Hero_1_BaseColor.dds
+map_Bump -bm 1.000000 Textures/White_Oak_Leaves_Hero_1_Normal.dds
+
+newmtl White_Oak_Leaves_Hero_3.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/White_Oak_Leaves_Hero_3_BaseColor.dds
+map_Ks Textures/White_Oak_Leaves_Hero_3_Specular.dds
+map_d Textures/White_Oak_Leaves_Hero_3_BaseColor.dds
+map_Bump -bm 1.000000 Textures/White_Oak_Leaves_Hero_3_Normal.dds
