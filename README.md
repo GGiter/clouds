@@ -17,3 +17,5 @@ After that in console type in:
 *vcpkg integrate install*
 
 Change configuration in solution to *Release* to compile.
+
+This project does not containt one of the meshes used by EmeraldSquare scene (Mesh139) as it was to large to commit to github.
