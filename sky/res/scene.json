@@ -1,28 +1,55 @@
 {
+	"scale": [1.0, 1.0, 1.0],
     "window": {
         "objFilePath": "res/objects/window/window.fbx",
         "position": [0.3, 0.0, 0.0],
         "scale": [0.1, 0.1, 0.1],
-		"rotation": [1.57, 4.71, 0.0]
+		"rotation": [1.57, 4.71, 0.0],
+		"collisionSize": [12.5, 12.5, 12.5],
+		"u_hasTexture": 0,
+		"u_isGlass": 1,
+		"u_hasShadow": 1
     },
     "crate": {
-        "objFilePath": "res/objects/crate.obj",
+        "objFilePath": "res/objects/crate/crate.obj",
         "position": [0.0, 0.01, 0.0],
-        "scale": [0.1, 0.1, 0.1]
-    },
-    "cone": {
-        "objFilePath": "res/objects/cone/cone.obj",
-        "position": [0.0, 0.0, 0.0],
-        "scale": [10.0, 10.0, 10.0]
+        "scale": [0.1, 0.1, 0.1],
+		"collisionSize": [1.0, 1.0, 1.0],
+		"u_hasTexture": 1,
+		"u_hasShadow": 1
     },
     "ground": {
         "objFilePath": "res/objects/ground/ground.fbx",
         "position": [0.0, -0.1, 0.0],
-        "scale": [2.0, 1.0, 2.0]
+        "scale": [2.0, 1.0, 2.0],
+		"collisionSize": [12.5, 12.5, 12.5],
+		"u_hasTexture": 1,
+		"u_hasShadow": 0,
+		"u_isGround": 1
     },
     "sphere": {
         "objFilePath": "res/objects/sphere/sphere.fbx",
         "position": [-0.3, 0.0, 0.0],
-        "scale": [0.1, 0.1, 0.1]
+        "scale": [0.1, 0.1, 0.1],
+		"collisionSize": [12.5, 12.5, 12.5],
+		"u_hasTexture": 1,
+		"u_hasShadow": 1
+    },
+    "bunny": {
+        "objFilePath": "res/objects/bunny/stanford-bunny.obj",
+        "position": [0.6, -0.13, 0.0],
+        "scale": [1.0, 1.0, 1.0],
+		"collisionSize": [1.0, 1.0, 1.0],
+		"u_hasTexture": 0,
+		"u_hasShadow": 0,
+		"u_isGlass": 1
+    },
+	"dragon": {
+        "objFilePath": "res/objects/dragon/xyzrgb_dragon.obj",
+        "position": [-0.6, -0.04, 0.0],
+        "scale": [0.0015, 0.0015, 0.0015],
+		"collisionSize": [1.0, 1.0, 1.0],
+		"u_hasTexture": 0,
+		"u_hasShadow": 1
     }
 }

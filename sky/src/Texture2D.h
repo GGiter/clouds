@@ -27,6 +27,7 @@ public:
 
 
 protected:
+	void LoadTexture(const std::string& path);
     unsigned int m_rendererID;
     int m_lastSlot = -1;
 	std::string m_filePath;

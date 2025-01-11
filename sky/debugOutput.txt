@@ -1,40 +1,54 @@
-Shader: depth
-  Average Time: 0.114518 ms
-  Max Time: 0.40768 ms
-  Min Time: 0.01472 ms
-  Total Executions: 172
 Shader: shadow-mapping-depth
-  Average Time: 0.0816902 ms
-  Max Time: 0.32128 ms
+  Average Time: 0.0352042 ms
+  Max Time: 24.9054 ms
   Min Time: 0.00032 ms
-  Total Executions: 172
+  Total Executions: 15450
 Shader: mesh
-  Average Time: 2.6962 ms
-  Max Time: 10.7462 ms
-  Min Time: 0.00912 ms
-  Total Executions: 172
-Shader: glass
-  Average Time: 0.0175702 ms
-  Max Time: 0.01904 ms
-  Min Time: 0.01568 ms
-  Total Executions: 43
+  Average Time: 2.39714 ms
+  Max Time: 435.9 ms
+  Min Time: 0.01872 ms
+  Total Executions: 15450
+Shader: passThroughCubemap
+  Average Time: 0.0124267 ms
+  Max Time: 0.01264 ms
+  Min Time: 0.01232 ms
 Shader: Procedural
-Average Time: 20.6601 ms
-Max Time: 22.4523 ms
-Min Time: 0.33088 ms
+  Average Time: 10.8321 ms
+  Max Time: 16.9189 ms
+  Min Time: 0.39584 ms
 Shader: velocity
-Average Time: 0.0101818 ms
-Max Time: 0.01152 ms
-Min Time: 0.00304 ms
+  Average Time: 0.01043 ms
+  Max Time: 0.01152 ms
+  Min Time: 0.01008 ms
 Shader: depth
-Average Time: 0.000752727 ms
-Max Time: 0.00544 ms
-Min Time: 0.00032 ms
+  Average Time: 0.00121 ms
+  Max Time: 0.00544 ms
+  Min Time: 0.00032 ms
+Shader: lerpCubemap
+  Average Time: 0.323703 ms
+  Max Time: 0.48064 ms
+  Min Time: 0.16592 ms
+Shader: passThrough
+  Average Time: 3.13833 ms
+  Max Time: 3.50624 ms
+  Min Time: 2.9656 ms
+Shader: thunders
+  Average Time: 6.69022 ms
+  Max Time: 9.59968 ms
+  Min Time: 2.73152 ms
 Shader: water-ripple
-Average Time: 0.149436 ms
-Max Time: 0.156 ms
-Min Time: 0.148 ms
-Shader: fxaa
-Average Time: 0.772669 ms
-Max Time: 0.79056 ms
-Min Time: 0.43296 ms
+  Average Time: 0.00739 ms
+  Max Time: 0.00912 ms
+  Min Time: 0.00576 ms
+Shader: water-splash
+  Average Time: 4.81e-06 ms
+  Max Time: 1.072e-05 ms
+  Min Time: 3.2e-07 ms
+Shader: rain-particle
+  Average Time: 2.06e-06 ms
+  Max Time: 2.816e-06 ms
+  Min Time: 6.4e-08 ms
+Shader: snow-particle
+  Average Time: 3.302e-06 ms
+  Max Time: 4.192e-06 ms
+  Min Time: 3.2e-08 ms

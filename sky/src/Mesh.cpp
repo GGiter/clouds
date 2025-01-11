@@ -7,8 +7,8 @@
 #include "Util.h"
 #include "GameWorld.h"  
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::unique_ptr<Texture2D>> textures)
-    : m_textures(std::move(textures))
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::shared_ptr<Texture2D>> textures)
+    : m_textures(textures)
 {
     this->vertices = vertices;
     this->indices = indices;
@@ -41,7 +41,7 @@ void Mesh::SetPosition(const glm::vec3& position)
 }
 
 // render the mesh
-void Mesh::Draw(Shader &shader) 
+void Mesh::Draw(Shader &shader, const glm::vec3& sceneScale) 
 {
     // bind appropriate textures
     for(unsigned int i = 0; i < m_textures.size(); i++)
@@ -55,6 +55,11 @@ void Mesh::Draw(Shader &shader)
     GLCall(glBindVertexArray(VAO));
     GLCall(glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0));
     GLCall(glBindVertexArray(0));
+
+    for(unsigned int i = 0; i < m_textures.size(); i++)
+    {
+         m_textures[i]->Unbind();
+    }
 }
 void Mesh::setupMesh()
 {

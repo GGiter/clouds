@@ -6,6 +6,12 @@
 #include <gl/ffx_fsr2_gl.h>
 #include "Upscaler.h"
 
+class PerspectiveCamera;
+class Scene;
+class CubemapFramebuffer;
+class VertexArray;
+class IndexBuffer;
+
 enum UpscalerVersion : int
 {
 	None = 0,
@@ -15,35 +21,37 @@ enum UpscalerVersion : int
 	Count = 4 
 };
 
-enum ViewLayerType : int
-{
-	VLT_Color = 0,
-	VLT_Depth = 1,
-	VLT_MotionVectors = 2,
-	VLT_Count = 3
-};
-
 class Application
 {
 public:
 	int Run();
 
 	static bool bUseProcedural;
-private:
-	void Render();
-	void GenerateTextures();
-	static void WindowSizeCallback(GLFWwindow* window, int width, int height);
-	static bool bNeedsReload;
+	static bool LoadOnlyDiffuseTextures;
+	static int MaxNumberOfMeshes;
 	static int windowHeight;
 	static int windowWidth;
 	static int downscaleFactor;
+private:
+	void Render();
+	void GenerateTextures();
+	void UpdatePreviousCubemapPass(Scene& scene, CubemapFramebuffer& cubemapPass, CubemapFramebuffer& previousCubemapPass, const glm::vec3& initialCameraPosition, Shader& passThroughCubemapShader, VertexArray& vaCube, IndexBuffer& ib, bool bShowDebugInfo);
+	void UpdateCubemapPass(Scene& scene, CubemapFramebuffer& cubemapPass, const glm::vec3& initialCameraPosition, Shader& shader, VertexArray& vaCube, IndexBuffer& ib, bool bShowDebugInfo, Shader& meshShader, std::unordered_map<std::string, Shader*>& shaderMap);
+	void SetCameraViewForFace(PerspectiveCamera& camera, unsigned int face);
+	void ConfigureMeshShader(Scene& scene, const PerspectiveCamera& cubemapCamera, Shader& meshShader, std::unordered_map<std::string, Shader*>& shaderMap);
+        void UpdateInterpolatedCubemap(
+            Scene &scene, CubemapFramebuffer &cubemapPass,
+            CubemapFramebuffer &previousCubemapPass,
+            CubemapFramebuffer &interpolatedCubemapPass,
+            const glm::vec3 &initialCameraPosition, float timePassed,
+            float CubemapUpdateRate, Shader &lerpCubemapShader,
+            VertexArray &vaCube, IndexBuffer &ib, bool bShowDebugInfo);
+	static void WindowSizeCallback(GLFWwindow* window, int width, int height);
+	static bool bNeedsReload;
 	static UpscalerVersion upscalerVersion;
-	static ViewLayerType viewLayerType;
 	static bool bUseFXAA;
 	static bool bUseDenoiseShader;
 	static bool bUseMipMaps;
-	static bool bUseRain;
-	static bool bUseSnow;
 	static bool bUseRainbow;
 	static bool bRenderMeshes;
 	static int WeatherTextureSize;
@@ -57,11 +65,15 @@ private:
 	static float SnowIntensity;
 	static bool bRenderSplashes;
 	static bool bRenderRipples;
-	static bool bRenderPuddles;
 	static bool bRenderRainCone;
-	static bool bUseSunrays;
+	static bool bUseRipples;
 	static int NumberOfBolts;
 	static float ThunderstormIntensity;
 	static bool bShowDebugInfo;
+	static bool bRenderPuddles;
+	static bool bRenderWetSurfaces;
+	static float ShadowIntensity;
+	static float MaxSnowDisplacement;
+	static std::string scenePath;
 	std::unique_ptr<Upscaler> upscaler;
 };

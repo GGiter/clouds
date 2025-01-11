@@ -1,7 +1,9 @@
 #include "Scene.h"
 #include <fstream>
+#include "Application.h"
 #pragma optimize("", off)
 Scene::Scene(const std::string& jsonFilePath) {
+    m_scale = glm::vec3(1.0f);
     LoadParametersFromFile(jsonFilePath);
     m_bSetDebugInfo = false;
 }
@@ -15,8 +17,13 @@ void Scene::LoadParametersFromFile(const std::string& filePath) {
     json j;
     file >> j;
     
-   InitializeModels(j);
-   ParseModelParameters(j);
+    // Load global scale if it exists
+    if (j.contains("scale") && j["scale"].is_array() && j["scale"].size() == 3) {
+        m_scale = glm::vec3(j["scale"][0].as<double>(), j["scale"][1].as<double>(), j["scale"][2].as<double>());
+    }
+
+     InitializeModels(j);
+     ParseModelParameters(j);
 }
 
 void Scene::InitializeModels(const json& j) {
@@ -25,11 +32,17 @@ void Scene::InitializeModels(const json& j) {
         json modelParams = element.value();
 
         // Extract the path to the OBJ file
-        if (modelParams.contains("objFilePath")) {
+        if (modelParams.contains("objFilePath") && m_models.size() < Application::MaxNumberOfMeshes) {
             std::string objFilePath = modelParams["objFilePath"].as<std::string>();
 
-            // Create a Model instance with the OBJ file path
-            m_models[modelName] = std::make_unique<Model>(objFilePath);
+            // Check if the model is already cached
+            if (m_modelCache.find(objFilePath) == m_modelCache.end()) {
+                // If not cached, create a new model and store it in the cache
+                m_modelCache[objFilePath] = std::make_shared<Model>(objFilePath, false, this);
+            }
+
+            // Assign the cached model to the scene
+            m_models[modelName] = m_modelCache[objFilePath];
         }
     }
 }
@@ -44,25 +57,32 @@ void Scene::ParseModelParameters(const json& j) {
             glm::vec3 position(0.0f);
             glm::vec3 scale(1.0f);
             glm::vec3 rotation(0.0f);
+            glm::vec3 collisionSize(0.0f);
             bool hasPosition = false;
             bool hasScale = false;
             bool hasRotation = false;
+            bool hasCollisionSize = false;
 
             for (const auto& param : modelParams.object_range()) {
                 std::string paramName = param.key();
                 const json& paramValue = param.value();
 
                 if (paramName == "position" && paramValue.is_array() && paramValue.size() == 3) {
-                    position = glm::vec3(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>());
+                    position = glm::vec3(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>()) * m_scale;
                     hasPosition = true;
                 } else if (paramName == "scale" && paramValue.is_array() && paramValue.size() == 3) {
-                    scale = glm::vec3(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>());
+                    scale = glm::vec3(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>()) * m_scale;
                     hasScale = true;
                 } else if (paramName == "rotation" && paramValue.is_array() && paramValue.size() == 3) {
                     rotation = glm::vec3(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>());
                     hasRotation = true;
+                } else if (paramName == "collisionSize" && paramValue.is_array() && paramValue.size() == 3) {
+                    collisionSize = glm::vec3(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>());
+                    hasCollisionSize = true;
                 } else if (paramValue.is<double>()) {
-                    SetParameterForModel(modelName, paramName, paramValue.as<double>());
+                    SetParameterForModel(modelName, paramName, (float)paramValue.as<double>());
+                } else if (paramValue.is<int>()) {
+                    SetParameterForModel(modelName, paramName, paramValue.as<int>());
                 } else if (paramValue.is_array() && paramValue.size() == 4) {
                     glm::vec4 vec(paramValue[0].as<double>(), paramValue[1].as<double>(), paramValue[2].as<double>(), paramValue[3].as<double>());
                     SetParameterForModel(modelName, paramName, vec);
@@ -89,7 +109,18 @@ void Scene::ParseModelParameters(const json& j) {
 
                 SetParameterForModel(modelName, "model", modelMatrix);
             }
+
+            // Store collision size if available
+            if (hasCollisionSize) {
+                m_models[modelName]->SetCollisionSize(collisionSize);
+            }
         }
+    }
+}
+
+void Scene::SetParameterForModel(const std::string& modelName, const std::string& name, int value) {
+    if (m_models.find(modelName) != m_models.end()) {
+        m_models[modelName]->SetParameter(name, value);
     }
 }
 
@@ -156,6 +187,7 @@ void Scene::SaveStatisticsToFile() {
         debugFile.close();
     }
     renderer.SaveStatisticsToFile();
+    renderer.SaveParticleShaderTimesToFile();
 }
 
 void Scene::Uninitialize()
@@ -166,24 +198,59 @@ void Scene::Uninitialize()
   }
 }
 
-void Scene::Draw(std::unordered_map<std::string, Shader*>& shaders) {
+std::unordered_map<std::string, std::shared_ptr<Texture2D>>& Scene::GetLoadedTexturesMap() 
+{
+    return loadedTexturesMap;
+}
+
+void Scene::Draw(std::unordered_map<std::string, Shader*>& shaders, const PerspectiveCamera& camera) {
     for (auto& [name, shader] : shaders) {
-        if (m_bSetDebugInfo) {
-            shader->StartTimer();
-            m_models[name]->Draw(*shader);
-            shader->StopTimer();
+        glm::mat4 modelMatrix = m_models[name]->GetParameterMat4("model");
+       // if (m_models[name]->CheckFrustumCull(camera, modelMatrix))
+        {
+            {
+                if (m_bSetDebugInfo) 
+                {
+                    shader->StartTimer();
+                    m_models[name]->Draw(*shader);
+                    shader->StopTimer();
 
-            double timeElapsed = shader->GetElapsedTime();
+                    double timeElapsed = shader->GetElapsedTime();
 
-            // Update statistics for this shader
-            auto& stats = m_shaderStatistics[shader->GetName()];
-            stats.totalTime += timeElapsed;
-            stats.executionCount++;
-            stats.maxTime = std::max(stats.maxTime, timeElapsed);
-            stats.minTime = std::min(stats.minTime, timeElapsed);
+                    // Update statistics for this shader
+                    auto& stats = m_shaderStatistics[shader->GetName()];
+                    stats.totalTime += timeElapsed;
+                    stats.executionCount++;
+                    stats.maxTime = std::max(stats.maxTime, timeElapsed);
+                    stats.minTime = std::min(stats.minTime, timeElapsed);
+                } 
+                else 
+                { 
 
-        } else {
-            m_models[name]->Draw(*shader);
+                    m_models[name]->Draw(*shader, m_scale);
+                }
+            }
+
         }
     }
+}
+
+std::vector<ObjectProperties> Scene::GetAvailableObjectsProperties() const {
+    std::vector<ObjectProperties> objects;
+    for (const auto& [modelName, model] : m_models) {
+        ObjectProperties properties;
+        properties.name = modelName;
+        properties.isGlass = model->HasParameter("u_isGlass") && model->GetParameterInt("u_isGlass") == 1;
+        properties.hasShadow = model->HasParameter("u_hasShadow") && model->GetParameterInt("u_hasShadow") == 1;
+        properties.isGround = model->HasParameter("u_isGround") && model->GetParameterInt("u_isGround") == 1;
+        objects.push_back(properties);
+    }
+    return objects;
+}
+
+std::optional<glm::vec3> Scene::GetCollisionSize(const std::string& modelName) const {
+    if (m_models.find(modelName) != m_models.end() && m_models.at(modelName)->HasCollisionSize()) {
+        return m_models.at(modelName)->GetCollisionSize();
+    }
+    return std::nullopt; // Return empty if no collision size is defined
 }

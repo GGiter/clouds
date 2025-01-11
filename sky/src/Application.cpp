@@ -45,18 +45,15 @@
 #define ENFORCE_SLOW_FRAMERATE_HACK 0
 /* Configuration properties */
 bool Application::bNeedsReload = false;
-int Application::windowWidth = 1920;
-int Application::windowHeight = 1080;
-int Application::downscaleFactor = 4;
-bool Application::bUseFXAA = true;
+int Application::windowWidth = 3840;
+int Application::windowHeight = 2160;
+int Application::downscaleFactor = 2;
+bool Application::bUseFXAA = false;
 UpscalerVersion Application::upscalerVersion = UpscalerVersion::Two;
-ViewLayerType Application::viewLayerType = ViewLayerType::VLT_Color;
 bool Application::bUseProcedural = true;
 bool Application::bUseDenoiseShader = false;
 bool Application::bUseMipMaps = true;
 bool Application::bRenderMeshes = true;
-bool Application::bUseRain = false;
-bool Application::bUseSnow = false;
 bool Application::bUseRainbow = false;
 int Application::WeatherTextureSize = 256;
 int Application::WorleyTextureSize = 64;
@@ -69,12 +66,18 @@ float Application::RainIntensity = 0.0f;
 float Application::SnowIntensity = 0.0f;
 bool Application::bRenderSplashes = true;
 bool Application::bRenderRipples = true;
-bool Application::bRenderPuddles = true;
 bool Application::bRenderRainCone = false;
-bool Application::bUseSunrays = false;
+bool Application::bUseRipples = true;
 int Application::NumberOfBolts = 3;
 float Application::ThunderstormIntensity = 0.0f;
 bool Application::bShowDebugInfo = false;
+bool Application::bRenderPuddles = true;
+bool Application::bRenderWetSurfaces = true;
+float Application::ShadowIntensity = 1.0;
+float Application::MaxSnowDisplacement = 0.015f;
+bool Application::LoadOnlyDiffuseTextures = false;
+int Application::MaxNumberOfMeshes = 5000;
+std::string Application::scenePath = "res/scene.json";
 
 /* Constants */
 constexpr const char* weatherTextureName = "perlin.bmp";
@@ -82,6 +85,8 @@ constexpr const char* worleyTextureName = "worley.bmp";
 constexpr const char* perlinWorleyTextureName = "perlinWorley.bmp";
 constexpr const std::string debugOutputFileName = "debugOutput.txt";
 const std::string fileName = "\\clouds.png";
+
+const float CubemapUpdateRate = 60.f;
 
 /* Callback called when window resizes */
 void Application::WindowSizeCallback(GLFWwindow* window, int width, int height)
@@ -102,7 +107,7 @@ int Application::Run()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+	//DIABLED as it caused black screen on NVIDIA GPU: glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
     Window::window = glfwCreateWindow(windowWidth, windowHeight, "Clouds", NULL, NULL);
     if (!Window::window)
     {
@@ -257,6 +262,8 @@ void Application::Render()
 	/* Setup shaders */
 	Shader shader(vertexFilePath, fragmentFilePath);
 
+	Shader thundersShader("res/shaders/thunders.vert", "res/shaders/thunders.frag");
+
 	Shader fxaaShader("res/shaders/fxaa.vert", "res/shaders/fxaa.frag");
 	fxaaShader.Bind();
 	fxaaShader.SetUniform2f("SourceSize", (float)windowWidth, (float)windowHeight);
@@ -265,7 +272,7 @@ void Application::Render()
 
 	Shader waterRippleShader("res/shaders/water-ripple.vert", "res/shaders/water-ripple.frag");
 	waterRippleShader.Bind();
-	waterRippleShader.SetUniform2f("SourceSize", (float)windowWidth, (float)windowHeight);
+	waterRippleShader.SetUniform2f("SourceSize", (float)renderWidth, (float)renderHeight);
 
 	Shader denoiseShader("res/shaders/denoise.vert", "res/shaders/denoise.frag");
 	denoiseShader.Bind();
@@ -275,12 +282,12 @@ void Application::Render()
 	denoiseShader.SetUniform1f("uKSigma", 1.4f);
 
 	Shader depthShader("res/shaders/depth.vert", "res/shaders/depth.frag");
-	Shader meshMarker("res/shaders/meshMarker.vert", "res/shaders/meshMarker.frag");
 	Shader velocityShader("res/shaders/velocity.vert", "res/shaders/velocity.frag");
-	Shader framebufferDrawShader("res/shaders/framebuffer-draw.vert", "res/shaders/framebuffer-draw.frag");
 	Shader meshShader("res/shaders/mesh.vert", "res/shaders/mesh.frag", "res/shaders/mesh.geom");
 	Shader rainShader("res/shaders/rain.vert", "res/shaders/rain.frag");
 	Shader glassShader("res/shaders/glass.vert", "res/shaders/glass.frag");
+	Shader passThroughCubemapShader("res/shaders/passThroughCubemap.vert", "res/shaders/passThroughCubemap.frag");
+	Shader lerpCubemapShader("res/shaders/lerpCubemap.vert", "res/shaders/lerpCubemap.frag");
 
 	shader.Bind();
 
@@ -340,10 +347,13 @@ void Application::Render()
 
 		texture3D.Load(volumeData, volumeDimensions.x, volumeDimensions.y, volumeDimensions.z, false, true);
 		texture3D.Bind(TextureCounter::GetNextID());
+		shader.Bind();
 		shader.SetUniform1i("u_Texture3D", texture3D.GetSlot());
+		thundersShader.Bind();
+		thundersShader.SetUniform1i("u_Texture3D", texture3D.GetSlot());
 	}
 
-	Scene scene("res/scene.json");
+	Scene scene(scenePath);
 	std::unordered_map<std::string, Shader*> shaderMap;
 
 	vaCube3.Unbind();
@@ -355,10 +365,18 @@ void Application::Render()
 	ib.Unbind();
 	shader.Unbind();
 
-	scene.GetModel("crate")->meshes[0]->InitCollision(glm::vec3(0,0,0), glm::vec3(0.1f, 0.1f, 0.1f));
-	scene.GetModel("ground")->meshes[0]->InitCollision(glm::vec3(0,0,0), glm::vec3(0.5f * 25, 0.5f * 25, 0.5f * 25));
-	scene.GetModel("window")->meshes[0]->InitCollision(glm::vec3(0,0,0), glm::vec3(0.5f * 25, 0.5f * 25, 0.5f * 25));
-	scene.GetModel("sphere")->meshes[0]->InitCollision(glm::vec3(0,0,0), glm::vec3(0.5f * 25, 0.5f * 25, 0.5f * 25));
+	for (const auto& [modelName, model] : scene.m_models) {
+		// Check if a collision size is defined for the model
+		std::optional<glm::vec3> collisionSize = scene.GetCollisionSize(modelName);
+		if (collisionSize.has_value()) {
+			// If the model has meshes, initialize the collision for the first mesh
+			if (!model->meshes.empty()) {
+				glm::vec3 size = collisionSize.value();
+				model->meshes[0]->InitCollision(glm::vec3(0, 0, 0), size);
+			}
+		}
+	}
+
 	GameWorld::WorldExtent = glm::vec3(250.f, 250.f, 250.f); 
 	Shader waterSplashShader("res/shaders/water-splash.vert", "res/shaders/water-splash.frag");
 	WaterSplashParticleManager waterSplashParticleManager(1000);
@@ -392,6 +410,8 @@ void Application::Render()
 		}
 	}
 
+	glm::vec3 initialCameraPosition = perspectiveCamera.GetViewMatrixPosition();
+
 	PerspectiveCamera prevPerspectiveCamera = perspectiveCamera;
 
 	ImGui::CreateContext();
@@ -403,10 +423,12 @@ void Application::Render()
 	CameraController cameraController;
 
 	/* Setup framebuffers */
+	CubemapFramebuffer previousCubemapPass(renderWidth, renderWidth);
+	CubemapFramebuffer interpolatedCubemapPass(renderWidth, renderWidth);
 	CubemapFramebuffer cubemapPass(renderWidth, renderWidth);
     Framebuffer fboDownscaledCloudPass(renderWidth, renderHeight);
 	Framebuffer fboFXAAPass(windowWidth, windowHeight);
-	Framebuffer waterRippleTexturePass(windowWidth, windowHeight);
+	Framebuffer waterRippleTexturePass(windowWidth / 8, windowHeight/ 8);
 	DepthFramebuffer fboDepth(renderWidth, renderHeight);
 	Framebuffer fboDepthMeshes(windowWidth, windowWidth);
 	MotionVectorsFramebuffer fboMotionVectors(renderWidth, renderHeight);
@@ -419,12 +441,13 @@ void Application::Render()
 	float rainTimePassed = 0.0f;
 	float snowAccumulation = 0.0f;
 	float thunderstromTimePassed = 0.0f;
-	float TimeMultiplier = 1.0f;
+	float TimeMultiplier = 0.0f; //HACK
 
 	int FrameCount = 0;
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(Window::window) && !bNeedsReload)
 	{
+		#if 1 
 		prevPerspectiveCamera = perspectiveCamera;
 		scene.GetRenderer().Clear();
 
@@ -493,7 +516,6 @@ void Application::Render()
 				snowAccumulation = 0.0;
 		}
 		
-		if(viewLayerType == ViewLayerType::VLT_Color)
 		{
 			/* CLOUDS PASS */
 			if(upscaler || bUseFXAA || bUseDenoiseShader)
@@ -503,15 +525,8 @@ void Application::Render()
 			}
 	
 			shader.Bind();
-			shader.SetUniform1f("u_RotationX", perspectiveCamera.GetRotationX());
-			shader.SetUniform1f("u_RotationY", perspectiveCamera.GetRotationY());
-			shader.SetUniform1f("u_RotationZ", perspectiveCamera.GetRotationZ());
-			shader.SetUniformVec3f("u_Translation", perspectiveCamera.GetPosition());
 			shader.SetUniform1i("u_UseMipMaps", (int)bUseMipMaps);
-			shader.SetUniform1i("u_UseRain", (int)bUseRain);
-			shader.SetUniform1i("u_UseSnow", (int)bUseSnow);
 			shader.SetUniform1i("u_UseRainbow", (int)bUseRainbow);
-			shader.SetUniform1i("u_UseSunrays", (int)bUseSunrays);
 			shader.SetUniform1i("u_NumberOfBolts", NumberOfBolts);
 			shader.SetUniformMat4f("u_MVPM", perspectiveCamera.GetViewProjectionMatrix());
 			shader.SetUniform2f("u_resolution", windowWidth, windowHeight);
@@ -519,9 +534,6 @@ void Application::Render()
 			shader.SetUniform1f("u_aspect", windowWidth / windowHeight);
 			shader.SetUniform1f("u_thunderstorm", ThunderstormIntensity);
 			shader.SetUniform1f("u_thunderstormTimePassed", thunderstromTimePassed);
-
-			fboDepthMeshes.GetTexture().Bind(TextureCounter::GetNextID());
-			shader.SetUniform1i("u_depthTexture", fboDepthMeshes.GetTexture().GetSlot());
 
 	
 			glm::vec3 sunPosition;
@@ -546,6 +558,7 @@ void Application::Render()
 				shader.Bind();
 				sunPosition = glm::vec3(sunposx, sunposy, sunposz);
 			}
+
 			glm::mat4 lightView = glm::lookAt(sunPosition, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
@@ -665,59 +678,77 @@ void Application::Render()
 			if(lastFBO)
 				lastFBO->GetTexture().Unbind();
 
+			//Draw thunders in full resolution
+			if(ThunderstormIntensity > 0.0f)
+			{
+				thundersShader.Bind();
+				thundersShader.SetUniform1f("u_Time", timePassed * TimeMultiplier);
+				thundersShader.SetUniform1f("u_WeatherScale", WeatherScale);
+				thundersShader.SetUniform1f("u_WorleyScale", WorleyScale);
+				thundersShader.SetUniform1f("u_PerlinWorleyScale", PerlinWorleyScale);
+				thundersShader.SetUniform1f("u_CloudType", CloudType);
+				thundersShader.SetUniformVec3f("sunPosition", sunPosition);
+				thundersShader.SetUniform1i("u_UseMipMaps", (int)bUseMipMaps);
+				thundersShader.SetUniform1i("u_UseRainbow", (int)bUseRainbow);
+				thundersShader.SetUniform1i("u_NumberOfBolts", NumberOfBolts);
+				thundersShader.SetUniformMat4f("u_MVPM", perspectiveCamera.GetViewProjectionMatrix());
+				thundersShader.SetUniform2f("u_resolution", windowWidth, windowHeight);
+				thundersShader.SetUniform1f("u_downscale", 1);
+				thundersShader.SetUniform1f("u_aspect", windowWidth / windowHeight);
+				thundersShader.SetUniform1f("u_thunderstorm", ThunderstormIntensity);
+				thundersShader.SetUniform1f("u_thunderstormTimePassed", thunderstromTimePassed);
+
+				scene.GetRenderer().Draw(vaCube, ib, thundersShader, bShowDebugInfo);
+			}
+
 			if(bRenderMeshes)
 			{
 				GLCall(glEnable(GL_DEPTH_TEST));
 				/*Render shadows*/			
 				fboShadowMap.Bind(TextureCounter::GetNextID());
 				GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-				//GLCall(glCullFace(GL_FRONT));
+				GLCall(glCullFace(GL_FRONT));
 				shadowMappingDepthShader.Bind();
 				shadowMappingDepthShader.SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
 				shaderMap.clear();
-				shaderMap["crate"] = &shadowMappingDepthShader;
-				shaderMap["window"] = &shadowMappingDepthShader;
-				shaderMap["ground"] = &shadowMappingDepthShader;
-				shaderMap["sphere"] = &shadowMappingDepthShader;
-				scene.Draw(shaderMap);
-				fboShadowMap.Unbind();
-				//GLCall(glCullFace(GL_BACK));
-				GLCall(glClear(GL_DEPTH_BUFFER_BIT));
 
-				GLCall(glEnable(GL_DEPTH_TEST));
-				/*Render depth buffer*/
-				depthShader.Bind();
-				depthShader.SetUniformMat4f("depthMVP", perspectiveCamera.GetViewProjectionMatrix());
-				fboDepthMeshes.Bind(TextureCounter::GetNextID());
-				GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-				shaderMap.clear();
-				shaderMap["crate"] = &depthShader;
-				shaderMap["window"] = &depthShader;
-				shaderMap["ground"] = &depthShader;
-				shaderMap["sphere"] = &depthShader;
-				scene.Draw(shaderMap);
-				fboDepthMeshes.Unbind();
-				depthShader.Unbind();
+				std::vector<ObjectProperties> objectProperties = scene.GetAvailableObjectsProperties();
+				for (const auto& props : objectProperties) {
+                    if (props.hasShadow)
+						shaderMap[props.name] = &shadowMappingDepthShader;
+				}
+				scene.Draw(shaderMap, perspectiveCamera);
+				fboShadowMap.Unbind();
+				shadowMappingDepthShader.Unbind();
+				GLCall(glCullFace(GL_BACK));
 				GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+				GLCall(glEnable(GL_DEPTH_TEST));
 
 	
 				/*Render Cube*/
 				shaderMap.clear();
-				shaderMap["ground"] = &meshShader;
+				for (const auto& props : objectProperties) {
+                    if (props.isGround)
+						shaderMap[props.name] = &meshShader;
+				}
 
 				meshShader.Bind();
 				meshShader.SetUniformMat4f("lightSpaceMatrix", lightSpaceMatrix);
 				fboShadowMap.GetTexture().Bind(TextureCounter::GetNextID()); //Bind shadow map
 				meshShader.SetUniform1i("shadowMap", fboShadowMap.GetTexture().GetSlot());
 				meshShader.SetUniform1f("u_useCubemap", (float)(FrameCount != 0));
-				cubemapPass.GetCubemap().Bind(TextureCounter::GetNextID());
-				meshShader.SetUniform1i("cubemap", cubemapPass.GetCubemap().GetSlot());
-				meshShader.SetUniformVec3f("u_eyePosition", perspectiveCamera.GetPosition());
+				interpolatedCubemapPass.GetCubemap().Bind(TextureCounter::GetNextID());
+				meshShader.SetUniform1i("cubemap", interpolatedCubemapPass.GetCubemap().GetSlot());
+				meshShader.SetUniformVec3f("u_eyePosition", perspectiveCamera.GetViewMatrixPosition());
 				meshShader.SetUniformMat4f("u_MVPM", perspectiveCamera.GetViewProjectionMatrix());
 				meshShader.SetUniform1f("u_rainIntensity", RainIntensity);
+				meshShader.SetUniform1f("shadowIntensity", ShadowIntensity);
 				meshShader.SetUniform1f("u_rainTimePassed", rainTimePassed);
 				meshShader.SetUniform1f("snowAccumulation", snowAccumulation);
-				meshShader.SetUniform1f("maxDisplacement", 0.05f);
+				meshShader.SetUniform1i("u_useRipples", bUseRipples);
+				meshShader.SetUniform1i("u_renderPuddles", bRenderPuddles);
+				meshShader.SetUniform1i("u_applyWetEffect", bRenderWetSurfaces);
+				meshShader.SetUniform1f("maxDisplacement", MaxSnowDisplacement);
 				snowAlbedoTexture.Bind(TextureCounter::GetNextID());
 				meshShader.SetUniform1i("snowAlbedoTexture", snowAlbedoTexture.GetSlot());
 				iceAlbedoTexture.Bind(TextureCounter::GetNextID());
@@ -731,17 +762,19 @@ void Application::Render()
 				meshShader.SetUniformMat4f("view", perspectiveCamera.GetViewMatrix());
 				waterRippleTexturePass.GetTexture().Bind(TextureCounter::GetNextID());
 				meshShader.SetUniform1i("RippleTexture", waterRippleTexturePass.GetTexture().GetSlot());
-				scene.Draw(shaderMap);
+				scene.Draw(shaderMap, perspectiveCamera);
 				waterRippleTexturePass.GetTexture().Unbind();
-
 				shaderMap.clear();
-				shaderMap["crate"] = &meshShader;
-				shaderMap["sphere"] = &meshShader;
-
-				meshShader.SetUniform1f("u_rainIntensity", 0.0f);
-				meshShader.SetUniform1f("u_rainTimePassed", 0.0f);
 				meshShader.SetUniform1f("u_useCubemap",  0.0f);
-				scene.Draw(shaderMap);
+				meshShader.SetUniform1f("shadowIntensity", ShadowIntensity);
+
+				for (const auto& props : objectProperties) {
+                    if (!props.isGlass)
+						shaderMap[props.name] = &meshShader;
+				}
+
+				scene.Draw(shaderMap, perspectiveCamera);
+				meshShader.Unbind();
 				snowAlbedoTexture.Unbind();
 				iceAlbedoTexture.Unbind();
 				snowNormalTexture1.Unbind();
@@ -749,13 +782,14 @@ void Application::Render()
 
 				/*Glass drops */
 				shaderMap.clear();
-				shaderMap["window"] = &glassShader;
-				shaderMap["sphere"] = &meshShader;
+
+				for (const auto& props : objectProperties) {
+                    if (props.isGlass)
+						shaderMap[props.name] = &glassShader;
+				}
 
 				glassShader.Bind();
-				glassShader.SetUniform1f("u_useCubemap",  0.0f);
-				glassShader.SetUniform1i("cubemap", cubemapPass.GetCubemap().GetSlot());
-				glassShader.SetUniformVec3f("u_eyePosition", perspectiveCamera.GetPosition());
+				glassShader.SetUniform1i("cubemap", interpolatedCubemapPass.GetCubemap().GetSlot());
 				glassShader.SetUniformMat4f("u_MVPM", perspectiveCamera.GetViewProjectionMatrix());
 				glassShader.SetUniform1f("u_rainIntensity", RainIntensity);
 				glassShader.SetUniform1f("u_Time", timePassed * TimeMultiplier);
@@ -763,7 +797,7 @@ void Application::Render()
 				glassShader.SetUniform1f("snowAccumulation", snowAccumulation);
 				glassNoiseTexture.Bind(TextureCounter::GetNextID());
 				glassShader.SetUniform1i("glassNoiseTexture", glassNoiseTexture.GetSlot());
-				scene.Draw(shaderMap);
+				scene.Draw(shaderMap, perspectiveCamera);
 				glassNoiseTexture.Unbind();
 
 				waterSplashShader.Bind();
@@ -771,14 +805,14 @@ void Application::Render()
 				waterSplashShader.SetUniform1i("texture_diffuse1", waterSplashTexture.GetSlot());
 				waterSplashParticleManager.SetRainIntensity(RainIntensity);
 				waterSplashParticleManager.Update(deltaTime);
-				waterSplashParticleManager.Draw(scene.GetRenderer(), perspectiveCamera.GetViewProjectionMatrix(), &waterSplashShader);
+				waterSplashParticleManager.Draw(scene.GetRenderer(), perspectiveCamera.GetViewProjectionMatrix(), &waterSplashShader, bShowDebugInfo);
 
 				/*Rain particles*/
 
 				rainParticleShader.Bind();
 				rainParticleManager.SetRainIntensity(RainIntensity);
 				rainParticleManager.Update(deltaTime);
-				rainParticleManager.Draw(scene.GetRenderer(), perspectiveCamera.GetViewProjectionMatrix(), &rainParticleShader);
+				rainParticleManager.Draw(scene.GetRenderer(), perspectiveCamera.GetViewProjectionMatrix(), &rainParticleShader, bShowDebugInfo);
 
 				/*Snow particles*/
 
@@ -787,12 +821,14 @@ void Application::Render()
 				snowParticleShader.SetUniform1i("snowflakeTexture", snowflakeTexture.GetSlot());
 				snowParticleManager.SetSnowIntensity(SnowIntensity);
 				snowParticleManager.Update(deltaTime);
-				snowParticleManager.Draw(scene.GetRenderer(), perspectiveCamera.GetViewProjectionMatrix(), &snowParticleShader);
+				snowParticleManager.Draw(scene.GetRenderer(), perspectiveCamera.GetViewProjectionMatrix(), &snowParticleShader, bShowDebugInfo);
 				snowflakeTexture.Unbind();
 
 				GLCall(glDisable(GL_DEPTH_TEST));
 				GLCall(glClear(GL_DEPTH_BUFFER_BIT));
-				/* generate water ripple texture */
+				//if(FrameCount == 0)
+				{
+									/* generate water ripple texture */
 				waterRippleTexturePass.Bind(TextureCounter::GetNextID());
 				waterRippleTexture.Bind(TextureCounter::GetNextID());
 				waterRippleShader.Bind();
@@ -802,6 +838,8 @@ void Application::Render()
 				scene.GetRenderer().Draw(vaUpscale, ibPost, waterRippleShader, bShowDebugInfo);
 				waterRippleTexture.Unbind();
 				waterRippleTexturePass.Unbind();
+				}
+
 
 
 				/* rain shader cone post process */
@@ -812,6 +850,13 @@ void Application::Render()
 					coneModelTransform = glm::translate(coneModelTransform, -perspectiveCamera.GetPosition() + glm::vec3(0,3.0, 0.0));
 					coneModelTransform = glm::scale(coneModelTransform, glm::vec3(10.0f, 10.0f, 10.0f));
 
+					//"cone": {
+					//"objFilePath": "res/objects/cone/cone.obj",
+					//"position": [0.0, 0.0, 0.0],
+					//"scale": [10.0, 10.0, 10.0],
+					//"u_hasTexture": 1
+					//},
+
 					shaderMap.clear();
 					shaderMap["cone"] = &rainShader;
 
@@ -820,90 +865,21 @@ void Application::Render()
 					rainShader.SetUniformMat4f("u_MVPM", perspectiveCamera.GetViewProjectionMatrix());
 					rainShader.SetUniformMat4f("model", coneModelTransform);
 					fboDepthMeshes.GetTexture().Bind(TextureCounter::GetNextID());
-					rainShader.SetUniform1i("u_depthTexture", fboDepthMeshes.GetTexture().GetSlot());
-					scene.Draw(shaderMap);
+					scene.Draw(shaderMap, perspectiveCamera);
 					fboDepthMeshes.GetTexture().Unbind();
 				}
-
-				if(FrameCount == 0) //GIGA HACK to have cubemap to refactor, it's okayinh at 10 at frame, but maybe some kind of blending between updates would be better
-				{
-					scene.GetRenderer().UpdateViewport((float)windowWidth / (downscaleFactor), (float)windowWidth / (downscaleFactor));
-					cubemapPass.Bind(TextureCounter::GetNextID());
-					PerspectiveCamera cubemapCamera = PerspectiveCamera(glm::radians(90.f), 1.0f, 1.0f); 
-
-					glm::vec3 position = perspectiveCamera.GetPosition();
-					//position.y = 1.0f;
-
-					cubemapCamera.SetPosition(position);
-
-					for(unsigned int face = 0; face < 6; ++face)
-					{
-						switch (face)
-						{
-						case 0: //POSITIVE X
-							cubemapCamera.SetViewMatrix(glm::lookAt(cubemapCamera.GetPosition(), cubemapCamera.GetPosition() + glm::vec3(1,0,0), glm::vec3(0,-1,0)));
-							break;
-						case 1: //NEGATIVE X
-							cubemapCamera.SetViewMatrix(glm::lookAt(cubemapCamera.GetPosition(), cubemapCamera.GetPosition() + glm::vec3(-1,0,0), glm::vec3(0,-1,0)));
-							break;
-						case 2: //POSITIVE Y
-							cubemapCamera.SetViewMatrix(glm::lookAt(cubemapCamera.GetPosition(), cubemapCamera.GetPosition() + glm::vec3(0,1,0), glm::vec3(0,0,1.f)));
-							break;
-						case 3: //NEGATIVE Y
-							cubemapCamera.SetViewMatrix(glm::lookAt(cubemapCamera.GetPosition(), cubemapCamera.GetPosition() + glm::vec3(0,-1,0), glm::vec3(0,0,-1.0f)));
-							break;
-						case 4: //POSITIVE Z
-							cubemapCamera.SetViewMatrix(glm::lookAt(cubemapCamera.GetPosition(), cubemapCamera.GetPosition() + glm::vec3(0,0,1), glm::vec3(0,-1,0)));
-							break;
-						case 5: //NEGATIVE Z
-							cubemapCamera.SetViewMatrix(glm::lookAt(cubemapCamera.GetPosition(), cubemapCamera.GetPosition() + glm::vec3(0,0,-1), glm::vec3(0,-1,0)));
-							break;
-						default:
-							break;
-						}
-						cubemapPass.DrawToFace(face);
-						shader.Bind();
-						shader.SetUniformMat4f("u_MVPM", cubemapCamera.GetViewProjectionMatrix());
-						scene.GetRenderer().Draw(vaCube, ib, shader, bShowDebugInfo);
-						GLCall(glEnable(GL_DEPTH_TEST));
-						shaderMap.clear();
-						shaderMap["ground"] = &meshShader;
-						shaderMap["crate"] = &meshShader;
-						shaderMap["window"] = &meshShader;
-						shaderMap["sphere"] = &meshShader;
-
-						meshShader.Bind();
-						meshShader.SetUniformMat4f("u_MVPM", cubemapCamera.GetViewProjectionMatrix());
-						scene.Draw(shaderMap);
-						GLCall(glDisable(GL_DEPTH_TEST));
-					}
-					cubemapPass.Unbind();
-
-
-					scene.GetRenderer().UpdateViewport((float)windowWidth, (float)windowHeight);
+				
+				if (FrameCount % static_cast<int>(CubemapUpdateRate) == 0) {
+					scene.GetRenderer().UpdateViewport(static_cast<float>(windowWidth) / downscaleFactor, static_cast<float>(windowWidth) / downscaleFactor);
+					UpdatePreviousCubemapPass(scene, cubemapPass, previousCubemapPass, initialCameraPosition, passThroughCubemapShader, vaCube, ib, bShowDebugInfo);
+					UpdateCubemapPass(scene, cubemapPass, initialCameraPosition, shader, vaCube, ib, bShowDebugInfo, meshShader, shaderMap);
+					scene.GetRenderer().UpdateViewport(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 				}
+
+				UpdateInterpolatedCubemap(scene, cubemapPass, previousCubemapPass, interpolatedCubemapPass, initialCameraPosition, timePassed, CubemapUpdateRate, lerpCubemapShader, vaCube, ib, bShowDebugInfo);
+
 			}
 
-		}
-		//Depth texture
-		else if(viewLayerType == ViewLayerType::VLT_Depth)
-		{
-			framebufferDrawShader.Bind();
-			fboDepth.Bind(TextureCounter::GetNextID());
-			framebufferDrawShader.SetUniform1i("u_Fbo", fboDepth.GetTexture().GetSlot());
-			scene.GetRenderer().Draw(vaUpscale, ibPost, framebufferDrawShader);
-			fboDepth.Unbind();
-			framebufferDrawShader.Unbind();
-		}
-		//MotionVectors texture
-		else
-		{
-			framebufferDrawShader.Bind();
-			fboMotionVectors.Bind(TextureCounter::GetNextID());
-			framebufferDrawShader.SetUniform1i("u_Fbo", fboMotionVectors.GetTexture().GetSlot());
-			scene.GetRenderer().Draw(vaUpscale, ibPost, framebufferDrawShader);
-			fboMotionVectors.Unbind();
-			framebufferDrawShader.Unbind();
 		}
 
 		FrameCount++;
@@ -943,18 +919,18 @@ void Application::Render()
 					upscalerVersion = (UpscalerVersion)current_element;
 					bNeedsReload = true;
 				}
-				ImGui::Checkbox("Use Rain", &bUseRain);
-				ImGui::Checkbox("Use Snow", &bUseSnow);
 				ImGui::Checkbox("Use Rainbow", &bUseRainbow);
 				ImGui::Checkbox("Render Meshes", &bRenderMeshes);
 				ImGui::Checkbox("Render Splashes", &bRenderSplashes);
 				ImGui::Checkbox("Render Ripples", &bRenderRipples);
 				ImGui::Checkbox("Render Puddles", &bRenderPuddles);
-				ImGui::Checkbox("Render Rain Cone", &bRenderRainCone);
-				ImGui::Checkbox("Use Sun Rays", &bUseSunrays);
+				ImGui::Checkbox("Render Wet Surfaces", &bRenderWetSurfaces);
+				ImGui::Checkbox("Use Ripples", &bUseRipples);
 				ImGui::SliderInt("Number of Bolts", &NumberOfBolts, 1, 12);
 				ImGui::SliderFloat("Rain Intensity", &RainIntensity, 0.0f, 1.0f);
 				ImGui::SliderFloat("Snow Intensity", &SnowIntensity, 0.0f, 1.0f);
+				ImGui::SliderFloat("Shadow Intensity", &ShadowIntensity, 0.0f, 1.0f);
+				ImGui::SliderFloat("Max Snow Displacement", &MaxSnowDisplacement, 0.000f, 0.02f);
 				ImGui::SliderFloat("Thunderstorm", &ThunderstormIntensity, 0.0f, 1.0f);
 				ImGui::Checkbox("Show Debug Info", &bShowDebugInfo);
 			}
@@ -967,38 +943,9 @@ void Application::Render()
 			snowParticleManager.SetInitialParticleVelocity(particleVelocity);
 			scene.SetDebugInfo(bShowDebugInfo, debugOutputFileName);
 
-			{
-				const char* element_names[ViewLayerType::VLT_Count] = { "Color", "Depth", "Motion Vectors"};
-				int current_element = viewLayerType;
-				const char* current_element_name = (current_element >= 0 && current_element < ViewLayerType::VLT_Count) ? element_names[current_element] : "Unknown";
-				if( ImGui::SliderInt("View layer Type", &current_element, 0, ViewLayerType::VLT_Count - 1, current_element_name))
-				{
-					viewLayerType = (ViewLayerType)current_element;
-					bNeedsReload = true;
-				}
-			}
-
-
 			if(ImGui::Button("Generate textures", ImVec2(200.f, 20.f)))
 			{
 				GenerateTextures();
-			}
-
-			if(!bUseProcedural)
-			{
-				if(ImGui::Button("Switch to procedural", ImVec2(200.f, 20.f)))
-				{
-					bUseProcedural = true;
-					bNeedsReload = true;
-				}
-			}
-			else 
-			{
-				if(ImGui::Button("Switch to OpenVDB", ImVec2(200.f, 20.f)))
-				{
-					bUseProcedural = false;
-					bNeedsReload = true;
-				}
 			}
 
 			/* Saving to file */
@@ -1033,6 +980,9 @@ void Application::Render()
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		ImGui::EndFrame();
+		#endif
+		//glClearColor(1.0f, 1.0f, 0.0f, 1.0f); // Yellow
+		//glClear(GL_COLOR_BUFFER_BIT);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(Window::window);
@@ -1098,4 +1048,119 @@ void Application::GenerateTextures()
 	std::vector<float> perlinWorleyData;
 	noiseTextureGenerator.GeneratePerlinWorleyTexture3D(PerlinWorleyTextureSize, PerlinWorleyTextureSize, PerlinWorleyTextureSize, perlinWorleyData);	
 	TextureSaver::SaveTextureToFile(perlinWorleyData, perlinWorleyTextureName, PerlinWorleyTextureSize * PerlinWorleyTextureSize, PerlinWorleyTextureSize, 4);
+}
+
+void Application::UpdatePreviousCubemapPass(Scene& scene, CubemapFramebuffer& cubemapPass, CubemapFramebuffer& previousCubemapPass, const glm::vec3& initialCameraPosition, Shader& passThroughCubemapShader, VertexArray& vaCube, IndexBuffer& ib, bool bShowDebugInfo) {
+    // Update the previous cubemap
+    cubemapPass.GetCubemap().Bind(TextureCounter::GetNextID());
+    passThroughCubemapShader.Bind();
+    passThroughCubemapShader.SetUniform1i("Source", cubemapPass.GetCubemap().GetSlot());
+
+    PerspectiveCamera cubemapCamera(glm::radians(90.f), 1.0f, 1.0f);
+    cubemapCamera.SetPosition(initialCameraPosition);
+
+    previousCubemapPass.Bind(TextureCounter::GetNextID());
+    for (unsigned int face = 0; face < 6; ++face) {
+        SetCameraViewForFace(cubemapCamera, face);
+        previousCubemapPass.DrawToFace(face);
+        passThroughCubemapShader.SetUniformMat4f("view", cubemapCamera.GetViewMatrix());
+        passThroughCubemapShader.SetUniformMat4f("projection", cubemapCamera.GetProjectionMatrix());
+        scene.GetRenderer().Draw(vaCube, ib, passThroughCubemapShader, bShowDebugInfo);
+        GLCall(glDisable(GL_DEPTH_TEST));
+    }
+    previousCubemapPass.Unbind();
+    cubemapPass.GetCubemap().Unbind();
+}
+
+void Application::UpdateCubemapPass(Scene& scene, CubemapFramebuffer& cubemapPass, const glm::vec3& initialCameraPosition, Shader& shader, VertexArray& vaCube, IndexBuffer& ib, bool bShowDebugInfo, Shader& meshShader, std::unordered_map<std::string, Shader*>& shaderMap) {
+    // Update the current cubemap
+    cubemapPass.Bind(TextureCounter::GetNextID());
+    PerspectiveCamera cubemapCamera(glm::radians(90.f), 1.0f, 1.0f);
+    cubemapCamera.SetPosition(initialCameraPosition);
+
+    for (unsigned int face = 0; face < 6; ++face) {
+        SetCameraViewForFace(cubemapCamera, face);
+        cubemapPass.DrawToFace(face);
+        shader.Bind();
+        shader.SetUniformMat4f("u_MVPM", cubemapCamera.GetViewProjectionMatrix());
+        shader.SetUniform2f("u_resolution", windowWidth, windowWidth);
+        shader.SetUniform1f("u_downscale", downscaleFactor);
+        shader.SetUniform1f("u_aspect", 1.0f);
+        scene.GetRenderer().Draw(vaCube, ib, shader, bShowDebugInfo);
+        GLCall(glEnable(GL_DEPTH_TEST));
+
+        ConfigureMeshShader(scene, cubemapCamera, meshShader, shaderMap);
+    }
+    cubemapPass.Unbind();
+}
+
+void Application::SetCameraViewForFace(PerspectiveCamera& camera, unsigned int face) {
+    switch (face) {
+        case 0: // POSITIVE X
+            camera.SetViewMatrix(glm::lookAt(camera.GetViewMatrixPosition(), camera.GetViewMatrixPosition() + glm::vec3(1, 0, 0), glm::vec3(0, -1, 0)));
+            break;
+        case 1: // NEGATIVE X
+            camera.SetViewMatrix(glm::lookAt(camera.GetViewMatrixPosition(), camera.GetViewMatrixPosition() + glm::vec3(-1, 0, 0), glm::vec3(0, -1, 0)));
+            break;
+        case 2: // POSITIVE Y
+            camera.SetViewMatrix(glm::lookAt(camera.GetViewMatrixPosition(), camera.GetViewMatrixPosition() + glm::vec3(0, 1, 0), glm::vec3(0, 0, 1.0f)));
+            break;
+        case 3: // NEGATIVE Y
+            camera.SetViewMatrix(glm::lookAt(camera.GetViewMatrixPosition(), camera.GetViewMatrixPosition() + glm::vec3(0, -1, 0), glm::vec3(0, 0, -1.0f)));
+            break;
+        case 4: // POSITIVE Z
+            camera.SetViewMatrix(glm::lookAt(camera.GetViewMatrixPosition(), camera.GetViewMatrixPosition() + glm::vec3(0, 0, 1), glm::vec3(0, -1, 0)));
+            break;
+        case 5: // NEGATIVE Z
+            camera.SetViewMatrix(glm::lookAt(camera.GetViewMatrixPosition(), camera.GetViewMatrixPosition() + glm::vec3(0, 0, -1), glm::vec3(0, -1, 0)));
+            break;
+    }
+}
+
+void Application::ConfigureMeshShader(Scene& scene, const PerspectiveCamera& cubemapCamera, Shader& meshShader, std::unordered_map<std::string, Shader*>& shaderMap) {
+    meshShader.Bind();
+    meshShader.SetUniform1f("u_rainIntensity", 0.0f);
+    meshShader.SetUniform1f("u_useCubemap", 0);
+    meshShader.SetUniformMat4f("view", cubemapCamera.GetViewMatrix());
+    meshShader.SetUniformMat4f("u_MVPM", cubemapCamera.GetViewProjectionMatrix());
+
+	std::vector<ObjectProperties> objectProperties = scene.GetAvailableObjectsProperties();
+	for (const auto& props : objectProperties) {
+			shaderMap[props.name] = &meshShader;
+	}
+    scene.Draw(shaderMap, cubemapCamera);
+    GLCall(glDisable(GL_DEPTH_TEST));
+}
+
+void Application::UpdateInterpolatedCubemap(Scene& scene, CubemapFramebuffer& cubemapPass, CubemapFramebuffer& previousCubemapPass, CubemapFramebuffer& interpolatedCubemapPass, const glm::vec3& initialCameraPosition, float timePassed, float CubemapUpdateRate, Shader& lerpCubemapShader, VertexArray& vaCube, IndexBuffer& ib, bool bShowDebugInfo) {
+    float mixFactor = fmod(timePassed, CubemapUpdateRate) / CubemapUpdateRate;
+    
+    scene.GetRenderer().UpdateViewport(static_cast<float>(windowWidth) / downscaleFactor, static_cast<float>(windowWidth) / downscaleFactor);
+    
+    cubemapPass.GetCubemap().Bind(TextureCounter::GetNextID());
+    previousCubemapPass.GetCubemap().Bind(TextureCounter::GetNextID());
+    lerpCubemapShader.Bind();
+    lerpCubemapShader.SetUniform1i("Source", previousCubemapPass.GetCubemap().GetSlot());
+    lerpCubemapShader.SetUniform1i("Target", cubemapPass.GetCubemap().GetSlot());
+    lerpCubemapShader.SetUniform1f("mixFactor", mixFactor);
+    
+    interpolatedCubemapPass.Bind(TextureCounter::GetNextID());
+    PerspectiveCamera cubemapCamera(glm::radians(90.f), 1.0f, 1.0f);
+    cubemapCamera.SetPosition(initialCameraPosition);
+    
+    for (unsigned int face = 0; face < 6; ++face) {
+        SetCameraViewForFace(cubemapCamera, face);
+        interpolatedCubemapPass.DrawToFace(face);
+        lerpCubemapShader.SetUniformMat4f("view", cubemapCamera.GetViewMatrix());
+        lerpCubemapShader.SetUniformMat4f("projection", cubemapCamera.GetProjectionMatrix());
+        scene.GetRenderer().Draw(vaCube, ib, lerpCubemapShader, bShowDebugInfo);
+        GLCall(glDisable(GL_DEPTH_TEST));
+    }
+    
+    interpolatedCubemapPass.Unbind();
+    previousCubemapPass.GetCubemap().Unbind();
+    cubemapPass.GetCubemap().Unbind();
+    lerpCubemapShader.Unbind();
+    
+    scene.GetRenderer().UpdateViewport(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
 }

@@ -12,7 +12,7 @@ public:
 	void SetRainIntensity(float InRainIntensity);
 	void RespawnParticle(RainParticle& particle,const glm::vec3& offset);
 	virtual void Update(float DeltaTime);
-	virtual void Draw(Renderer& renderer, const glm::mat4& MV, Shader* particleShader);
+	virtual void Draw(Renderer& renderer, const glm::mat4& MV, Shader* particleShader, bool bShowDebugInfo);
 	glm::vec3 FindRainParticlePosition();
 	bool DoesParticleCollideWithWorld(RainParticle& particle) const;
 	void SetCenterPosition(const glm::vec3& centerPosition);

@@ -12,6 +12,7 @@ public:
 	glm::vec3 Position;
 	glm::vec3 Velocity;
 	glm::vec4 Color;
+	float RotationY;
 	glm::mat4 transform;
 	float Life;
 	bool bIs2D;

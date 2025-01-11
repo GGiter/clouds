@@ -83,12 +83,23 @@ void WaterSplashParticleManager::Update(float DeltaTime)
     }  
 }
 
-void WaterSplashParticleManager::Draw(Renderer& renderer, const glm::mat4& MVP, Shader* particleShader)
+void WaterSplashParticleManager::Draw(Renderer& renderer, const glm::mat4& MVP, Shader* particleShader, bool bShowDebugInfo)
 {
+    if (particleShader && bShowDebugInfo) {
+        particleShader->StartTimer();
+    }
+
     for (WaterSplashParticle& particle : m_particles)
     {
         particle.Draw(renderer, MVP, particleShader);
-    } 
+    }
+
+    if (particleShader && bShowDebugInfo) {
+        particleShader->StopTimer();
+        double timeElapsed = particleShader->GetElapsedTime() / m_particles.size();
+
+        renderer.CalculateParticleShaderTimes(particleShader->GetName(), timeElapsed);
+    }
 }
 
 glm::vec3 WaterSplashParticleManager::FindWaterSplashPosition()

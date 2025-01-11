@@ -69,6 +69,36 @@ void Renderer::SaveStatisticsToFile()
     }
 }
 
+void Renderer::CalculateParticleShaderTimes(const std::string& shaderName, double elapsedTime)
+{
+    m_shaderTimesForParticles[shaderName].push_back(elapsedTime);
+}
+
+void Renderer::SaveParticleShaderTimesToFile()
+{
+    if (!m_debugFilePath.empty()) {
+        std::ofstream debugFile(m_debugFilePath, std::ios::out | std::ios::app);
+
+        if (debugFile.is_open()) {
+            for (const auto& [shaderName, times] : m_shaderTimesForParticles) {
+                if (!times.empty()) {
+                    double sum = std::accumulate(times.begin(), times.end(), 0.0);
+                    double avg = sum / times.size();
+                    double minTime = *std::min_element(times.begin(), times.end());
+                    double maxTime = *std::max_element(times.begin(), times.end());
+
+                    debugFile << "Shader: " << shaderName << std::endl;
+                    debugFile << "  Average Time: " << avg << " ms" << std::endl;
+                    debugFile << "  Max Time: " << maxTime << " ms" << std::endl;
+                    debugFile << "  Min Time: " << minTime << " ms" << std::endl;
+                }
+            }
+
+            debugFile.close();
+        }
+    }
+}
+
 void Renderer::SetDebugInfo(const std::string& debugFilePath)
 {
    m_debugFilePath = debugFilePath;

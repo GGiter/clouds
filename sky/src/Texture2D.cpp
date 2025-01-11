@@ -1,10 +1,14 @@
 #include "Texture2D.h"
 #include "stb_image/stb_image.h"
 #include "TextureCounter.h"
+#include <FreeImage.h>
+#include <algorithm>
+#include <gli/gli.hpp>
 
 Texture2D::Texture2D(const std::string &path, int width, int height, bool bClampToEdge)
 {
-	Load(path, width, height, bClampToEdge);
+  bInitialized = false;
+  Load(path, width, height, bClampToEdge);
 }
 
 Texture2D::Texture2D(const std::vector<float>& textureBuffer, int width, int height, bool bClampToEdge)
@@ -43,12 +47,81 @@ Texture2D::Texture2D(int width, int height, bool bClampToEdge)
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	}
+	else
+	{
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+	}
 
 	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_width, m_height, 0, GL_RGBA, GL_FLOAT, nullptr));
 	GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 
 	bInitialized = true;
+}
+
+void Texture2D::LoadTexture(const std::string& path)
+{
+    if (path.empty())
+    {
+        std::cerr << "Path to texture file is empty." << std::endl;
+        return;
+    }
+
+    // Check if the file extension is DDS
+    std::string extension = path.substr(path.find_last_of('.') + 1);
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower); // Convert extension to lowercase for case-insensitive comparison
+
+    if (extension == "dds")
+    {
+        // Use gli to load DDS file
+        gli::texture texture = gli::load(path);
+        if (texture.empty())
+        {
+            std::cerr << "Failed to load DDS texture: " << path << std::endl;
+            return;
+        }
+
+        gli::texture2d texture2D(texture);
+        if (texture2D.empty())
+        {
+            std::cerr << "Failed to convert DDS texture to 2D texture: " << path << std::endl;
+            return;
+        }
+
+        // Extract texture properties
+        m_width = static_cast<int>(texture2D.extent().x);
+        m_height = static_cast<int>(texture2D.extent().y);
+
+		// Perform conversion to 32-bit RGBA
+		gli::texture2d converted = gli::convert(texture2D, gli::FORMAT_RGBA8_UNORM_PACK8);
+		if (converted.empty())
+		{
+			std::cerr << "Failed to convert texture to 32-bit RGBA: " << path << std::endl;
+			return;
+		}
+
+		texture2D = converted;
+
+        m_BPP = 4;
+
+        // Allocate memory for local buffer
+        size_t bufferSize = texture2D.size();
+        m_localBuffer = new unsigned char[bufferSize];
+
+        // Copy texture data
+        std::memcpy(m_localBuffer, texture2D.data(0, 0, 0), bufferSize);
+    }
+    else
+    {
+        // Use stb_image to load non-DDS files
+		stbi_set_flip_vertically_on_load(1);
+        m_localBuffer = stbi_load(path.c_str(), &m_width, &m_height, &m_BPP, 0);
+        if (!m_localBuffer)
+        {
+            std::cerr << "Failed to load texture file: " << path << " with stb_image." << std::endl;
+        }
+    }
 }
 
 Texture2D::~Texture2D()
@@ -69,9 +142,8 @@ bool Texture2D::Load(const std::string& path, int width, int height, bool bClamp
 	m_width = width;
 	m_height = height;
 	m_BPP = 0;
-	stbi_set_flip_vertically_on_load(1);
-	if (path != "")
-	m_localBuffer = stbi_load(path.c_str(), &m_width, &m_height, &m_BPP, 0);
+
+	LoadTexture(path);
 
 	GLCall(glGenTextures(1, &m_rendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_rendererID));
@@ -94,8 +166,21 @@ bool Texture2D::Load(const std::string& path, int width, int height, bool bClamp
 	GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 
-	if (m_localBuffer)
-		stbi_image_free(m_localBuffer);
+
+	std::string extension = path.substr(path.find_last_of('.') + 1);
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+
+	if (extension != "dds")
+	{
+		if (m_localBuffer)
+			stbi_image_free(m_localBuffer);
+	}
+	else
+	{
+		delete m_localBuffer;
+		m_localBuffer = nullptr;
+	}
+					
 
 	bInitialized = true;
 

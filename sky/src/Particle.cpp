@@ -66,6 +66,7 @@ void Particle::Draw(Renderer& renderer, const glm::mat4& MVP,Shader* particleSha
         particleShader->Bind();
         transform = glm::mat4(1.f);
         transform = glm::scale(transform, GetScale());
+        transform = glm::rotate(transform, glm::radians(RotationY), glm::vec3(0.0f, 1.0f, 0.0f));
         transform = glm::translate(transform, glm::vec3(Position.x, Position.z, Position.y));
         particleShader->SetUniformMat4f("u_MVPM", MVP);
         particleShader->SetUniformMat4f("transform", transform);

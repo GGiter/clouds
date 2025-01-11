@@ -15,16 +15,16 @@ public:
     // mesh Data
     std::vector<Vertex>       vertices;
     std::vector<unsigned int> indices;
-    std::vector<std::unique_ptr<Texture2D>>  m_textures;
+    std::vector<std::shared_ptr<Texture2D>>  m_textures;
     unsigned int VAO;
     AABBCollision m_AABBCollision;
     // constructor
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::unique_ptr<Texture2D>> textures);
+    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<std::shared_ptr<Texture2D>> textures);
     virtual ~Mesh();
     void InitCollision(const glm::vec3& position, const::glm::vec3 scale);
     void SetPosition(const glm::vec3& position);
     // render the mesh
-    void Draw(Shader &shader);
+    void Draw(Shader &shader, const glm::vec3& sceneScale = glm::vec3(1.f));
     void Uninitialize();
 
 private:

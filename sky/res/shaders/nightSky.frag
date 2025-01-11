@@ -2,39 +2,60 @@
 
 #define MOONLIGHTCOLOR vec3(.8,0.8,0.8)
 
-bool intersectSphere ( in vec3 ro, in vec3 rd, in vec4 sph, out float dist, out vec3 normal ) {
-    vec3  ds = ro - sph.xyz;
-    float bs = dot( rd, ds );
-    float cs = dot(  ds, ds ) - sph.w*sph.w;
-    float ts = bs*bs - cs;
-	
-    if( ts > 0.0 ) {
-        ts = -bs - sqrt( ts );
-		if( ts>0. ) {
-			normal = normalize( ((ro+ts*rd)-sph.xyz)/sph.w );
-			dist = ts;
-			return true;
-		}
+bool intersectSphere(in vec3 rayOrigin, in vec3 rayDirection, in vec4 sphere, out float distance, out vec3 normal) {
+    // Calculate the vector from the ray origin to the sphere center
+    vec3 toSphereCenter = rayOrigin - sphere.xyz;
+    
+    // Compute coefficients for the quadratic equation
+    float b = dot(rayDirection, toSphereCenter);
+    float c = dot(toSphereCenter, toSphereCenter) - sphere.w * sphere.w;
+    float discriminant = b * b - c;
+
+    // Check for intersections
+    if (discriminant > 0.0) {
+        float t = -b - sqrt(discriminant);
+        
+        // Ensure the intersection is in front of the ray origin
+        if (t > 0.0) {
+            // Calculate the normal at the intersection point
+            normal = normalize((rayOrigin + t * rayDirection - sphere.xyz) / sphere.w);
+            distance = t;
+            return true;
+        }
     }
 
+    // No intersection found
     return false;
 }
 
-vec3 moon(vec3 rd, vec3 skyColor, float time) {
+vec3 moon(vec3 rayDirection, vec3 skyColor, float time) {
+    // Calculate the moon's directional vector
     float moonTime = time * 0.5;
-    vec3 moondir = normalize( vec3( cos(moonTime * 0.1), 0.8*(0.6+0.5*sin(-moonTime * 0.1)), sin(moonTime * 0.1) ) );
-    float moonglow = clamp( 1.0782*dot(moondir,rd), 0.0, 2.0 );
-	vec3 col = skyColor;
-	col += 0.43*MOONLIGHTCOLOR*pow( moonglow, 3.0 );
+    vec3 moonDirection = normalize(vec3(
+        cos(moonTime * 0.1),
+        0.8 * (0.6 + 0.5 * sin(-moonTime * 0.1)),
+        sin(moonTime * 0.1)
+    ));
 
-	float dist; vec3 normal; bool moonhit = false;
-	if( intersectSphere( vec3(0., 0., 0.), rd, vec4( moondir, 0.03), dist, normal ) ) {
-		float l = dot( normalize(vec3( -moondir.x, 0.0, -moondir.z)+vec3( 2.2, -1.6, 0.)), normal );
-		col += 3.0*MOONLIGHTCOLOR*clamp(l, 0.0, 1.);
-		moonhit = true;
-	}
+    // Compute the moon's glow based on its direction
+    float moonGlow = clamp(1.0782 * dot(moonDirection, rayDirection), 0.0, 2.0);
+    vec3 color = skyColor + 0.43 * MOONLIGHTCOLOR * pow(moonGlow, 3.0);
 
-    return mix(col, skyColor,(skyColor.x + skyColor.y + skyColor.z) /1.5);
+    // Variables for intersection calculations
+    float distance;
+    vec3 normal;
+    bool moonHit = false;
+
+    // Check for intersection with the moon sphere
+    if (intersectSphere(vec3(0.0), rayDirection, vec4(moonDirection, 0.03), distance, normal)) {
+        // Calculate the lighting based on the normal at the intersection point
+        float lightIntensity = dot(normalize(vec3(-moonDirection.x, 0.0, -moonDirection.z) + vec3(2.2, -1.6, 0.0)), normal);
+        color += 3.0 * MOONLIGHTCOLOR * clamp(lightIntensity, 0.0, 1.0);
+        moonHit = true;
+    }
+
+    // Blend the moonlight color with the sky color
+    return mix(color, skyColor, (skyColor.x + skyColor.y + skyColor.z) / 1.5);
 }
 
 
@@ -122,12 +143,20 @@ float SimplexPolkaDot3D(vec3 P, float density )
     return dot(b, pointDistance);
 }
 
-vec3 stars(vec3 ndir) {
-
-	vec3 COLOR = vec3(0.0);
-	float star = SimplexPolkaDot3D(ndir*100.0, 0.15)+SimplexPolkaDot3D(ndir*150.0, 0.25)*0.7;
-	vec3 col = vec3(0.05, 0.07, 0.1);
-	COLOR.rgb = col+max(0.0, (star-smoothstep(0.2, 0.95, 0.5-0.5*ndir.y)));
-	COLOR.rgb += vec3(0.05, 0.07, 0.1)*(1.0-smoothstep(-0.1, 0.45, ndir.y));
-	return COLOR;
+vec3 stars(vec3 normalizedDirection) {
+    // Initialize color
+    vec3 color = vec3(0.0);
+    
+    // Generate star intensity using Simplex noise
+    float starIntensity = SimplexPolkaDot3D(normalizedDirection * 100.0, 0.15) 
+                        + SimplexPolkaDot3D(normalizedDirection * 150.0, 0.25) * 0.7;
+    
+    // Base star color
+    vec3 baseColor = vec3(0.05, 0.07, 0.1);
+    
+    // Adjust color based on star intensity and vertical direction
+    color += baseColor + max(0.0, (starIntensity - smoothstep(0.2, 0.95, 0.5 - 0.5 * normalizedDirection.y)));
+    color += baseColor * (1.0 - smoothstep(-0.1, 0.45, normalizedDirection.y));
+    
+    return color;
 }

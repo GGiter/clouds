@@ -7,6 +7,7 @@ Framebuffer::Framebuffer(int windowWidth, int windowHeight)
   GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferID));
 
   GLCall(glBindTexture(GL_TEXTURE_2D, m_texture2D->GetID()));
+
   GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                GL_TEXTURE_2D,
                          m_texture2D->GetID(), 0));
@@ -43,6 +44,7 @@ DepthFramebuffer::DepthFramebuffer(int windowWidth, int windowHeight)
       GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_frameBufferID));
 
       GLCall(glBindTexture(GL_TEXTURE_2D, m_texture2D->GetID()));
+
       GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                                    GL_TEXTURE_2D,
                              m_texture2D->GetID(), 0));

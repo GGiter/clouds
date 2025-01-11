@@ -1,0 +1,55 @@
+Shader: shadow-mapping-depth
+  Average Time: 0.0696703 ms
+  Max Time: 0.27536 ms
+  Min Time: 0.00032 ms
+  Total Executions: 296
+Shader: mesh
+  Average Time: 3.70852 ms
+  Max Time: 6.55584 ms
+  Min Time: 0.01616 ms
+  Total Executions: 406
+Shader: glass
+  Average Time: 0.0608119 ms
+  Max Time: 0.12208 ms
+  Min Time: 0.01264 ms
+  Total Executions: 148
+Shader: passThroughCubemap
+  Average Time: 0.0241867 ms
+  Max Time: 0.04576 ms
+  Min Time: 0.01264 ms
+Shader: Procedural
+  Average Time: 11.376 ms
+  Max Time: 15.4728 ms
+  Min Time: 0.40464 ms
+Shader: velocity
+  Average Time: 0.0087168 ms
+  Max Time: 0.01872 ms
+  Min Time: 0.00688 ms
+Shader: depth
+  Average Time: 0.000836267 ms
+  Max Time: 0.00544 ms
+  Min Time: 0.00048 ms
+Shader: lerpCubemap
+  Average Time: 0.0358116 ms
+  Max Time: 0.27904 ms
+  Min Time: 0.01296 ms
+Shader: passThrough
+  Average Time: 0.201263 ms
+  Max Time: 0.20432 ms
+  Min Time: 0.19568 ms
+Shader: water-ripple
+  Average Time: 0.00592853 ms
+  Max Time: 0.0088 ms
+  Min Time: 0.00528 ms
+Shader: water-splash
+  Average Time: 0.0490197 ms
+  Max Time: 0.82976 ms
+  Min Time: 0.00816 ms
+Shader: rain-particle
+  Average Time: 0.0503531 ms
+  Max Time: 3.74736 ms
+  Min Time: 0.00032 ms
+Shader: snow-particle
+  Average Time: 0.201075 ms
+  Max Time: 15.0558 ms
+  Min Time: 0.00016 ms

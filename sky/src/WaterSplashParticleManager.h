@@ -12,7 +12,7 @@ public:
 	void RespawnParticle(WaterSplashParticle& particle,const glm::vec3& offset);
 	void SetRainIntensity(float InRainIntensity);
 	virtual void Update(float DeltaTime);
-	virtual void Draw(Renderer& renderer, const glm::mat4& MV, Shader* particleShader);
+	virtual void Draw(Renderer& renderer, const glm::mat4& MV, Shader* particleShader, bool bShowDebugInfo);
 	glm::vec3 FindWaterSplashPosition();
 	void SetCenterPosition(const glm::vec3& centerPosition);
 

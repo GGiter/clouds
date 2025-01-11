@@ -46,6 +46,4 @@ void main()
     FragColor.rgb = vec3(1);
     if( texture(u_depthTexture, ScreenUV).r >= 0.3)
             FragColor. a = 0.0;
-
-    //FragColor = texture(u_depthTexture, ScreenUV);
 }

@@ -10,10 +10,11 @@ public:
 	void SpawnParticles();
 	unsigned int FirstUnusedParticle();
 	void SetSnowIntensity(float InRainIntensity);
-	void RespawnParticle(SnowParticle& particle,const glm::vec3& offset);
+	void RespawnParticle(SnowParticle& particle,const glm::vec3& offset, float RandomRotationInY);
 	virtual void Update(float DeltaTime);
-	virtual void Draw(Renderer& renderer, const glm::mat4& MV, Shader* particleShader);
+	virtual void Draw(Renderer& renderer, const glm::mat4& MV, Shader* particleShader, bool bShowDebugInfo);
 	glm::vec3 FindSnowParticlePosition();
+	float GenerateRandomRotationInY();
 	bool DoesParticleCollideWithWorld(SnowParticle& particle) const;
 	void SetCenterPosition(const glm::vec3& centerPosition);
 	void SetWind(const glm::vec3& wind);

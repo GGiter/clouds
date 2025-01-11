@@ -102,12 +102,23 @@ void RainParticleManager::Update(float DeltaTime)
     }  
 }
 
-void RainParticleManager::Draw(Renderer& renderer, const glm::mat4& MVP, Shader* particleShader)
+void RainParticleManager::Draw(Renderer& renderer, const glm::mat4& MVP, Shader* particleShader, bool bShowDebugInfo)
 {
+    if (particleShader && bShowDebugInfo) {
+        particleShader->StartTimer();
+    }
+
     for (RainParticle& particle : m_particles)
     {
         particle.Draw(renderer, MVP, particleShader);
     } 
+
+    if (particleShader && bShowDebugInfo) {
+        particleShader->StopTimer();
+        double timeElapsed = particleShader->GetElapsedTime() / m_particles.size();
+
+        renderer.CalculateParticleShaderTimes(particleShader->GetName(), timeElapsed);
+    }
 }
 
 glm::vec3 RainParticleManager::FindRainParticlePosition()

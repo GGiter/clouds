@@ -33,6 +33,7 @@ void SnowParticleManager::SpawnParticles()
        m_particles.push_back(std::move(SnowParticle));
        m_particles[i].Initialize();
        m_particles[i].Position = FindSnowParticlePosition();
+       m_particles[i].RotationY = GenerateRandomRotationInY();
        m_particles[i].Life = 100.f;
        m_particles[i].Velocity = glm::vec3(0,0,-25.f);
     }
@@ -64,8 +65,9 @@ void SnowParticleManager::SetSnowIntensity(float InRainIntensity)
      m_snowIntensity = InRainIntensity;
 }
 
-void SnowParticleManager::RespawnParticle(SnowParticle& particle, const glm::vec3& position)
+void SnowParticleManager::RespawnParticle(SnowParticle& particle, const glm::vec3& position, float RandomRotationInY)
 {
+    particle.RotationY = RandomRotationInY;
     particle.Position = position;
     particle.Color = glm::vec4(1.0f);
     particle.Life = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(10.f)));
@@ -80,7 +82,7 @@ void SnowParticleManager::Update(float DeltaTime)
         int unusedParticle = FirstUnusedParticle();
         if(unusedParticle >= 0)
         {
-           RespawnParticle(m_particles[unusedParticle], FindSnowParticlePosition());
+           RespawnParticle(m_particles[unusedParticle], FindSnowParticlePosition(), GenerateRandomRotationInY());
         }
     }
     // update all particles
@@ -101,12 +103,23 @@ void SnowParticleManager::Update(float DeltaTime)
     }  
 }
 
-void SnowParticleManager::Draw(Renderer& renderer, const glm::mat4& MVP, Shader* particleShader)
+void SnowParticleManager::Draw(Renderer& renderer, const glm::mat4& MVP, Shader* particleShader, bool bShowDebugInfo)
 {
+    if (particleShader && bShowDebugInfo) {
+        particleShader->StartTimer();
+    }
+
     for (SnowParticle& particle : m_particles)
     {
         particle.Draw(renderer, MVP, particleShader);
     } 
+
+    if (particleShader && bShowDebugInfo) {
+        particleShader->StopTimer();
+        double timeElapsed = particleShader->GetElapsedTime() / m_particles.size();
+
+        renderer.CalculateParticleShaderTimes(particleShader->GetName(), timeElapsed);
+    }
 }
 
 glm::vec3 SnowParticleManager::FindSnowParticlePosition()
@@ -114,6 +127,11 @@ glm::vec3 SnowParticleManager::FindSnowParticlePosition()
     float x = -GameWorld::WorldExtent.x + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(GameWorld::WorldExtent.x * 2)));
     float y = -GameWorld::WorldExtent.y + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/(GameWorld::WorldExtent.y * 2)));
     return glm::vec3((x + m_centerPosition.x), (y + m_centerPosition.y), 100.f);
+}
+
+float SnowParticleManager::GenerateRandomRotationInY()
+{
+    return static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / 360.0f));
 }
 
 bool SnowParticleManager::DoesParticleCollideWithWorld(SnowParticle& particle) const

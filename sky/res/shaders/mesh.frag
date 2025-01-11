@@ -1,14 +1,12 @@
 #version 460
+#extension GL_NV_shadow_samplers_cube : enable
 out vec4 FragColor;
 
 in vec2 TexCoords;
-in vec3 position;
 in vec3 ModelSpacePosition;
 in vec3 normal;
-in vec3 ModelSpaceNormal;
 in vec4 vertexColor;
 in vec3 FragPos;
-in mat3 TBN;
 in vec4 FragPosLightSpace;
 
 uniform vec3 u_eyePosition;
@@ -20,8 +18,14 @@ uniform float u_useCubemap;
 uniform float u_rainIntensity;
 uniform float u_rainTimePassed;
 uniform mat4 view;
+uniform mat4 model;
 uniform float snowAccumulation;
 uniform int u_FrameCount;
+uniform int u_useRipples;
+uniform float shadowIntensity;
+uniform int u_renderPuddles;
+uniform int u_applyWetEffect; 
+uniform int u_hasTexture; 
 
 
 uniform sampler2D snowNormal1Texture;
@@ -158,108 +162,230 @@ float snoise(vec3 v)
 }
 
 
-vec3  ScaleCoordinate(vec3 pos, float scale)
+vec3 ScaleCoordinate(vec3 pos, float scale)
 {
     return fract(pos) * scale;
 }
 
-//TO-DO: snow occlusion, snow normal
+// Function to generate noise
+float GenerateNoise(vec3 posCoord) {
+    float noiseValue = 0.0;
+    for (float idx = 0.0; idx < orders; ++idx) {
+        vec3 posScaled = idx * posCoord;
+        float amplitude = pow(persistance, idx);
+        posScaled = amplitude * ScaleCoordinate(posCoord, ImageSize);
+        noiseValue += snoise(posScaled);
+    }
+    return noiseValue;
+}
 
-// there are values in vertex color b and vertex color r
-void main()
-{    
-    vec3 L = TBN * normalize(u_lightPosition - position);
+// Function to calculate specular lighting
+vec3 CalculateSpecular(vec3 lightDir, vec3 viewDir, vec3 normal) {
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    return vec3(0.3) * spec;
+}
+
+//3D Value Noise generator by Morgan McGuire @morgan3d
+//https://www.shadertoy.com/view/4dS3Wd
+float hash(float n) { return fract(sin(n) * 1e4); }
+float hash(vec2 p) { return fract(1e4 * sin(17.0 * p.x + p.y * 0.1) * (0.1 + abs(sin(p.y * 13.0 + p.x)))); }
+
+float noise(vec3 x) {
+	const vec3 step = vec3(110, 241, 171);
+
+	vec3 i = floor(x);
+	vec3 f = fract(x);
+
+	// For performance, compute the base input to a 1D hash from the integer part of the argument and the
+	// incremental change to the 1D based on the 3D -> 1D wrapping
+    float n = dot(i, step);
+
+	vec3 u = f * f * (3.0 - 2.0 * f);
+	return mix(mix(mix( hash(n + dot(step, vec3(0, 0, 0))), hash(n + dot(step, vec3(1, 0, 0))), u.x),
+		   mix( hash(n + dot(step, vec3(0, 1, 0))), hash(n + dot(step, vec3(1, 1, 0))), u.x), u.y),
+	       mix(mix( hash(n + dot(step, vec3(0, 0, 1))), hash(n + dot(step, vec3(1, 0, 1))), u.x),
+		   mix( hash(n + dot(step, vec3(0, 1, 1))), hash(n + dot(step, vec3(1, 1, 1))), u.x), u.y), u.z);
+}
+
+//Fractional Brownian Motion
+#define NUM_OCTAVES 2
+
+float fnoise(vec3 x) {
+	float v = 0.0;
+	float a = 0.5;
+	vec3 shift = vec3(100);
+	for (int i = 0; i < NUM_OCTAVES; ++i) {
+		v += a * noise(x);
+		x = x * 2.0 + shift;
+		a *= 0.5;
+	}
+	return v;
+}
+
+
+vec4 ApplyWetSurfaceEffect(vec4 baseColor, vec3 viewDir, vec3 lightDir, float diffuseStrength) {
+    // Calculate incident vector from camera to the surface
+    vec3 I = normalize(ModelSpacePosition - vec3(0, 2, 0));
     
-    vec3 Normal = TBN * normal;
-    vec3 RippleNormal = texture(RippleTexture, TexCoords * 10).rgb;
-    vec3 N = mix(vec3(0,0,1), RippleNormal, u_rainIntensity * (1 - vertexColor.b * u_rainTimePassed));
+    // Enhance glossiness for a shiny, wet effect
+    float wetGloss = 0.6 + 0.6 * u_rainIntensity; // Increase gloss intensity for shinier effect
+    vec3 wetNormal = normal;
+    
+    // Calculate reflection direction based on the enhanced normal
 
-    //vec3 N = mix(WaterNormal, normalize(normal), vertexColor.r * u_rainIntensity); //use different vertex color in the future
-    vec4 BaseFragColor;
-    float diff = max(dot(L, Normal), 0);
-    vec3 viewDir = TBN * normalize(u_eyePosition - position);
-    float shadow = ShadowCalculation(FragPosLightSpace);
-    if(u_FrameCount > 0)
+    vec3 reflectionColor = baseColor.rgb;
+    if(u_useCubemap > 0)
     {
-        vec3 color = texture(texture_diffuse1, TexCoords).rgb;;
-        vec3 diffuse = diff * color;
-        vec3 ambient = 0.05 * color;
-        vec3 reflectDir = reflect(-L, Normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
-        vec3 specular = vec3(0.3) * spec;
-        FragColor = vec4(ambient + (1.0 - shadow) * (diffuse + specular), texture(texture_diffuse1, TexCoords).a);
+        vec3 reflectDir = reflect(I, wetNormal);
+        reflectionColor = texture(cubemap, reflectDir).rgb;
     }
-    else
-    {
-        FragColor = texture(texture_diffuse1, TexCoords);
+   
+    // Darken the reflection to simulate a wet, dampened look
+    reflectionColor = mix(reflectionColor, vec3(0.0), 0.5); // Mix with black to darken reflection
+
+    // Fresnel factor calculation
+    float F0 = 0.04; // Base reflectivity for water or smooth surface
+    float cosTheta = clamp(dot(viewDir, wetNormal), 0.0, 1.0);
+    float fresnelFactor = F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+
+    // Generate FBM-based noise for randomized reflection application
+    float reflectionNoise = fnoise(ModelSpacePosition * 100.0); // Adjust scale to control patchiness
+    float reflectionThreshold = mix(0.1, 0.21, u_rainTimePassed); // Dynamically adjust threshold based on rain intensity
+
+    // Determine reflection factor based on FBM noise and Fresnel effect
+    float reflectionFactor = (reflectionNoise < reflectionThreshold) ? fresnelFactor * u_rainTimePassed : 0.0; // Adjust reflection factor
+    
+    // Adjust reflectionFactor to ensure it scales smoothly with u_rainTimePassed
+    reflectionFactor = clamp(reflectionFactor, 0.0, 1.0); // Ensure it stays within [0, 1]
+
+    // Calculate the wet surface color, using a darkened reflection color
+    vec3 wetSurfaceColor = mix(baseColor.rgb, reflectionColor, reflectionFactor);
+
+    // Adding a strong specular highlight to enhance shininess on reflective areas
+    vec3 h = normalize(lightDir + viewDir); // Halfway vector for Phong specular highlight
+    float specularStrength = pow(max(dot(wetNormal, h), 0.0), 100.0); // Increase exponent for sharper highlight
+    vec3 specularHighlight = specularStrength * reflectionColor * u_rainTimePassed; // Modulate by rain intensity
+    
+    // **Additional gloss for non-reflective areas**: Calculate glossiness where reflection is minimal
+    float nonReflectiveFactor = 1.0 - reflectionFactor; // Inverse of reflection factor
+    float nonReflectiveGloss = pow(max(dot(wetNormal, h), 0.0), 50.0); // Lower gloss exponent for a broader sheen
+    vec3 nonReflectiveHighlight = nonReflectiveGloss * vec3(1.0, 1.0, 1.0) * nonReflectiveFactor;
+
+    // Combine base color with reflections, specular highlight, and additional non-reflective gloss effect
+    vec3 finalColor = wetSurfaceColor + specularHighlight + nonReflectiveHighlight;
+    return vec4(finalColor, 1.0);
+}
+
+// Function to apply cubemap effects
+vec4 ApplyCubemapEffects(vec4 baseColor, vec3 lightViewDir, vec3 viewDir, float diffuseStrength) {
+    vec3 I = normalize(ModelSpacePosition - vec3(0, 2, 0));
+    float refractiveFactor = 0.5;
+    vec3 rippleNormal = texture(RippleTexture, TexCoords).rgb;
+    float rippleAlpha = texture(RippleTexture, TexCoords).a * u_useRipples;
+
+    // Blending factor for ripple normal and model space normal
+    float rippleBlendFactor = clamp(rippleAlpha * u_rainIntensity * (1.0 - vertexColor.b * u_rainTimePassed), 0.0, 1.0);
+    vec3 blendedNormal = normalize(mix(normal, rippleNormal, rippleBlendFactor));
+
+    vec3 refractDir = refract(I, normalize(blendedNormal), 1.00 / 1.2);
+    vec3 reflectDir = reflect(I, normalize(blendedNormal));
+    vec3 reflectionColor = textureCube(cubemap, reflectDir).rgb;
+    vec3 refractionColor = textureCube(cubemap, refractDir).rgb;
+
+    // Darken the reflection and refractionColor to simulate a wet, dampened look
+    reflectionColor = mix(reflectionColor, vec3(0.0), 0.5); // Mix with black to darken reflection
+    refractionColor = mix(refractionColor, vec3(0.0), 0.5); // Mix with black to darken refractionColor
+
+    vec3 waterColor = diffuseStrength * vec3(0, 0, 0.5);
+    vec3 diffuseColor = diffuseStrength * mix(reflectionColor, refractionColor, refractiveFactor);
+    vec3 diffuseWaterColor = diffuseStrength * texture(texture_diffuse1, TexCoords).rgb;
+    diffuseWaterColor = mix(waterColor, diffuseWaterColor, 0.9);
+    diffuseColor = mix(diffuseColor, diffuseWaterColor, 0.9);
+
+    vec3 finalColor = mix(baseColor.rgb, mix(reflectionColor, refractionColor, refractiveFactor), u_rainTimePassed);
+    return vec4(mix(finalColor, baseColor.rgb, vertexColor.b), 1.0);
+}
+
+// Function to apply snow effects
+vec4 ApplySnowEffects(vec4 baseColor, vec3 lightViewDir, float diffuseStrength, vec3 viewDir, float shadowFactor, vec3 specularColor) {
+    vec3 snowNormal = mix(texture(snowNormal1Texture, TexCoords).rgb, texture(snowNormal2Texture, TexCoords).rgb, snowAccumulation);
+    snowNormal = normalize((snowNormal * 2.0 - 1.0));
+
+    // Calculate slope
+    float slope = acos(dot(snowNormal, vec3(0.0, -1.0, 0.0)));
+    slope = clamp(slope / 3.14159, 0.0, 1.0);
+    //slope = pow(slope, 2.0);
+
+    // Noise generation
+    vec3 posCoord = vec3(TexCoords.x, TexCoords.y, 0.0) * 200;
+    float noiseVal = GenerateNoise(posCoord);
+
+    // Calculate snow alpha
+    float alpha = slope + FractionNoise * smoothstep(0.0, 1.0, noiseVal);
+    alpha *= snowAccumulation;
+    if(vertexColor == vec4(0.5))
+        alpha *= 1.2;
+
+    // Snow color blending
+    vec3 snowColor = texture2D(iceAlbedoTexture, TexCoords).rgb;
+    vec4 snowFragColor = vec4(mix(baseColor.rgb, snowColor, (1.0 - vertexColor.b) * alpha * u_rainTimePassed), 1.0);
+
+    // Specular highlight for snow
+    if (u_rainIntensity > 0.0) {
+        alpha *= vertexColor.b;
     }
-    BaseFragColor = FragColor;
+    vec3 color = texture2D(snowAlbedoTexture, TexCoords).rgb;
+    vec3 reflectDir = reflect(-lightViewDir, snowNormal);
+    vec3 ambient = 0.9 * color;
 
-    if(u_useCubemap > 0.0 && u_rainIntensity > 0.0)
-    {
-        vec3 I = normalize(ModelSpacePosition - vec3(0,2.0,0));
-        vec3 toCameraVector = normalize(u_eyePosition - ModelSpacePosition);
-        float refractiveFactor = dot(toCameraVector, vec3(0.0, 1.0, 0.0));
-        refractiveFactor = clamp(pow(refractiveFactor, 0.5), 0.0, 1.0);
-        vec3 Refract = refract(I, normalize(ModelSpaceNormal), 1.00 / 1.2);
-        vec3 Reflect = reflect(I, normalize(ModelSpaceNormal));
-        vec3 reflection = textureCube(cubemap, Reflect).rgb;
-        vec3 refraction = textureCube(cubemap, Refract).rgb;
+    // Final snow color
+    vec3 snowAlbedo = ambient + (1.0 - shadowFactor) * (color * diffuseStrength + specularColor);
+    vec3 finalSnowColor = snowAlbedo * alpha + vec3(snowFragColor) * (1.0 - alpha);
+    return vec4(finalSnowColor, 1.0);
+}
 
-        vec3 waterColor = vec3(0,0,0.5);
+// Main function for fragment shader
+void main() 
+{    
+    vec3 lightViewDir = normalize(u_lightPosition - ModelSpacePosition);
+    vec4 baseFragColor = vec4(1,1,1,1);
+    float diffuseStrength = max(dot(lightViewDir, normal), 0);
+    vec3 viewDir = normalize(ModelSpacePosition - u_eyePosition);
+    float shadowFactor = 0.0;
+    if(shadowIntensity > 0.0)
+        shadowFactor = shadowIntensity * ShadowCalculation(FragPosLightSpace);
 
-        vec3 diffuseColor = mix(reflection, refraction, refractiveFactor);
-        vec3 diffuseWaterColor = texture(texture_diffuse1, TexCoords).rgb;
-        diffuseWaterColor = mix(waterColor, diffuseWaterColor, 0.9);
-        diffuseColor = mix(diffuseColor, diffuseWaterColor, 0.9);
+    vec3 specularColor = vec3(0);
 
-        vec3 color = mix(reflection, refraction, refractiveFactor);
-        color = mix(color, waterColor, 0.2);
-
-        color = mix(diffuseColor, color, u_rainTimePassed);
-        FragColor = vec4(mix(color, diffuseColor * clamp(1.0 - shadow, 0.05, 1.0), vertexColor.b), 1.0);
-
+    // Lighting calculations
+    if (u_FrameCount > 0) {
+        vec4 color = vec4(0.23, 0.156, 0.055, 1.0);
+        if(u_hasTexture > 0)
+            color = texture(texture_diffuse1, TexCoords).rgba;
+        vec3 ambientColor = 0.1 * color.rgb;
+        vec3 diffuseColor = diffuseStrength * color.rgb;
+        specularColor = CalculateSpecular(lightViewDir, viewDir, normal);
+        
+        baseFragColor = vec4(ambientColor + (1.0 - shadowFactor) * (diffuseColor + specularColor), color.a);
+    } else {
+        baseFragColor = texture(texture_diffuse1, TexCoords);
     }
-    if(snowAccumulation > 0.0)
-    {       
-        vec3 snowNormal = mix(texture(snowNormal1Texture, TexCoords).rgb, texture(snowNormal2Texture, TexCoords).rgb, snowAccumulation);
-        snowNormal = snowNormal * 2.0 - 1.0;
-        snowNormal = normalize(TBN * snowNormal);
 
-        float slope = acos(dot(snowNormal, vec3(0.0, -1.0, 0.0)));
-        slope = clamp(slope / 3.14159, 0.0, 1.0);
-        slope = pow(slope, 2.0);
-
-
-        vec3 posCoord = vec3(gl_FragCoord.x, gl_FragCoord.y, 0.0);
-        posCoord /= 10.0;
-        float noiseval = 0.0;
-
-        for (float idx = 0.0; idx < orders; ++idx) {
-            vec3 posScaled = idx * posCoord;
-            float amplitude = pow(persistance, idx);
-            posScaled = amplitude * ScaleCoordinate(posCoord, ImageSize);
-            noiseval += snoise(posScaled);
+    // Apply cubemap reflections/refractions
+    // Conditionally apply cubemap reflections/refractions
+    if (u_rainIntensity > 0.0 && u_useCubemap > 0.0) {
+        if (vertexColor.b > 0.99 && u_applyWetEffect > 0) {
+            baseFragColor = ApplyWetSurfaceEffect(baseFragColor, viewDir, lightViewDir, diffuseStrength);
+        } else if (u_renderPuddles > 0) {
+            baseFragColor = ApplyCubemapEffects(baseFragColor, lightViewDir, viewDir, diffuseStrength);
         }
-
-        float alpha = slope;
-        alpha += FractionNoise * noiseval;
-        alpha *= snowAccumulation;
-
-        vec3 SnowColor = texture2D(iceAlbedoTexture, TexCoords).rgb * diff;
-        FragColor = vec4(mix(FragColor.rgb,SnowColor, (1 - vertexColor.b) * alpha * u_rainTimePassed) , 1.0);
-        if(u_rainIntensity > 0.0)
-            alpha *= vertexColor.b;
-
-        diff = max(dot(L, Normal), 0);
-        vec3 color = texture2D(snowAlbedoTexture, TexCoords).rgb;
-        vec3 reflectDir = reflect(-L, snowNormal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
-        vec3 specular = vec3(0.3) * spec;
-        vec3 ambient = 0.5 * color;
-
-        vec3 snowAlbedo = ambient + (1.0 - shadow) * (color * diff + specular);
-        vec3 snowColor = snowAlbedo * alpha + vec3(FragColor) * (1 - alpha);
-        FragColor = vec4(snowColor, 1.0);
     }
+
+    // Handle snow accumulation effects
+    if (snowAccumulation > 0.0) {       
+        baseFragColor = ApplySnowEffects(baseFragColor, lightViewDir, diffuseStrength, viewDir, shadowFactor, specularColor);
+    }
+
+    FragColor = baseFragColor;
 }

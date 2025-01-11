@@ -18,3 +18,8 @@ void TextureCounter::ReleaseID(int ID)
 {
     IDsContainer.insert(ID);
 }
+
+int TextureCounter::GetCurrentID()
+{
+    return CurrentID;
+}

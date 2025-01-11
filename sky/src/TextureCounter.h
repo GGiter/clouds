@@ -8,5 +8,6 @@ private:
 public:
 	static int GetNextID();
 	static void ReleaseID(int ID);
+    static int GetCurrentID();
 };
 
