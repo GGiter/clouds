@@ -1,0 +1,46 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Paris_StringLights_01_White_Color
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_StringLights_01_White_Color_BaseColor.dds
+map_Ks Textures/Paris_StringLights_01_White_Color_Specular.dds
+map_d Textures/Paris_StringLights_01_White_Color_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_StringLights_01_White_Color_Normal.dds
+
+newmtl Streetlight_Chains
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Streetlight_Chains_BaseColor.dds
+map_Ks Textures/Streetlight_Chains_Specular.dds
+map_d Textures/Streetlight_Chains_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Streetlight_Chains_Normal.dds
+
+newmtl Streetlight_Metal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Streetlight_Metal_BaseColor.dds
+map_Ks Textures/Streetlight_Metal_Specular.dds
+map_d Textures/Streetlight_Metal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Streetlight_Metal_Normal.dds
+
+newmtl Streetlight_Support_Bulb
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Streetlight_Support_Bulb_BaseColor.dds
+map_Ks Textures/Streetlight_Support_Bulb_Specular.dds
+map_d Textures/Streetlight_Support_Bulb_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Streetlight_Support_Bulb_Normal.dds

@@ -1,0 +1,24 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl MASTER_Black_Metal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MASTER_Black_Metal_BaseColor.dds
+map_Ks Textures/MASTER_Black_Metal_Specular.dds
+map_d Textures/MASTER_Black_Metal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MASTER_Black_Metal_Normal.dds
+
+newmtl MASTER_Wood_Brown
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MASTER_Wood_Brown_BaseColor.dds
+map_Ks Textures/MASTER_Wood_Brown_Specular.dds
+map_d Textures/MASTER_Wood_Brown_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MASTER_Wood_Brown_Normal.dds

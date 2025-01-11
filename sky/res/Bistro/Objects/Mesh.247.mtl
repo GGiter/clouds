@@ -1,0 +1,57 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Balcony_Concrete
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Balcony_Concrete_BaseColor.dds
+map_Ks Textures/Balcony_Concrete_Specular.dds
+map_d Textures/Balcony_Concrete_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Balcony_Concrete_Normal.dds
+
+newmtl Balcony_Green_Wood
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Balcony_Green_Wood_BaseColor.dds
+map_Ks Textures/Balcony_Green_Wood_Specular.dds
+map_d Textures/Balcony_Green_Wood_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Balcony_Green_Wood_Normal.dds
+
+newmtl Balcony_Ornaments
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Balcony_Ornaments_BaseColor.dds
+map_Ks Textures/Balcony_Ornaments_Specular.dds
+map_d Textures/Balcony_Ornaments_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Balcony_Ornaments_Normal.dds
+
+newmtl Balcony_Trims
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Balcony_Trims_BaseColor.dds
+map_Ks Textures/Balcony_Trims_Specular.dds
+map_d Textures/Balcony_Trims_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Balcony_Trims_Normal.dds
+
+newmtl MASTER_Glass_Dirty_MASKED
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MASTER_Glass_Dirty_MASKED_BaseColor.dds
+map_Ks Textures/MASTER_Glass_Dirty_MASKED_Specular.dds
+map_d Textures/MASTER_Glass_Dirty_MASKED_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MASTER_Glass_Dirty_MASKED_Normal.dds

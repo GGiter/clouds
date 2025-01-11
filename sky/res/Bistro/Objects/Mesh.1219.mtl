@@ -1,0 +1,35 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Antenna_Metal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Antenna_Metal_BaseColor.dds
+map_Ks Textures/Antenna_Metal_Specular.dds
+map_d Textures/Antenna_Metal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Antenna_Metal_Normal.dds
+
+newmtl Antenna_Plastic
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Antenna_Plastic_BaseColor.dds
+map_Ks Textures/Antenna_Plastic_Specular.dds
+map_d Textures/Antenna_Plastic_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Antenna_Plastic_Normal.dds
+
+newmtl Antenna_Plastic_Blue
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Antenna_Plastic_Blue_BaseColor.dds
+map_Ks Textures/Antenna_Plastic_Blue_Specular.dds
+map_d Textures/Antenna_Plastic_Blue_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Antenna_Plastic_Blue_Normal.dds

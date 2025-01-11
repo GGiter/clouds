@@ -1,0 +1,17 @@
+# Blender 3.6.18
+# www.blender.org
+mtllib Mesh.1016.mtl
+o Bistro_Research_Exterior_Paris_Building_01_paris_buildi_4fa3cce
+v 2.324014 8.640298 2.549189
+v 2.324014 7.978882 2.549189
+v 3.688198 8.640296 3.079381
+v 3.688198 7.978882 3.079381
+vn -0.3653 -0.0039 0.9309
+vt 0.001376 0.239258
+vt 0.001376 0.007324
+vt 0.571777 0.239258
+vt 0.571777 0.007324
+s 1
+usemtl MASTER_Forge_Metal
+f 1/1/1 2/2/1 3/3/1
+f 2/2/1 4/4/1 3/3/1

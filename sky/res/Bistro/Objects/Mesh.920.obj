@@ -1,0 +1,18 @@
+# Blender 3.6.18
+# www.blender.org
+mtllib Mesh.920.mtl
+o Bistro_Research_Exterior_Paris_Building_01_paris_buildi_a58ece0
+v -3.044775 4.287027 -3.651012
+v -2.838574 4.247948 -3.751350
+v -2.930675 4.287027 -3.416526
+v -2.724473 4.247948 -3.516863
+vn -0.1520 -0.9862 0.0662
+vn -0.1520 -0.9862 0.0663
+vt 0.000000 1.000000
+vt 0.000000 0.000000
+vt 1.000000 1.000000
+vt 1.000000 0.000000
+s 1
+usemtl Spotlight_Glass_Emissive
+f 1/1/1 2/2/1 3/3/1
+f 2/2/1 4/4/2 3/3/1

@@ -1,0 +1,46 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Concrete
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Concrete_BaseColor.dds
+map_Ks Textures/Concrete_Specular.dds
+map_d Textures/Concrete_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Concrete_Normal.dds
+
+newmtl Concrete2
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Concrete2_BaseColor.dds
+map_Ks Textures/Concrete2_Specular.dds
+map_d Textures/Concrete2_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Concrete2_Normal.dds
+
+newmtl Concrete_Striped
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Concrete_Striped_BaseColor.dds
+map_Ks Textures/Concrete_Striped_Specular.dds
+map_d Textures/Concrete_Striped_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Concrete_Striped_Normal.dds
+
+newmtl MASTER_Black_Metal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MASTER_Black_Metal_BaseColor.dds
+map_Ks Textures/MASTER_Black_Metal_Specular.dds
+map_d Textures/MASTER_Black_Metal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MASTER_Black_Metal_Normal.dds

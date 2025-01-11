@@ -1,0 +1,13 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Foliage_Bux_Hedges46.DoubleSided
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Foliage_Bux_Hedges46_BaseColor.dds
+map_Ks Textures/Foliage_Bux_Hedges46_Specular.dds
+map_d Textures/Foliage_Bux_Hedges46_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Foliage_Bux_Hedges46_Normal.dds

@@ -1,0 +1,24 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Banner_Metal
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Banner_Metal_BaseColor.dds
+map_Ks Textures/Banner_Metal_Specular.dds
+map_d Textures/Banner_Metal_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Banner_Metal_Normal.dds
+
+newmtl Shopsign_Book_Store_Emissive
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Shopsign_Book_Store_Emissive_BaseColor.dds
+map_Ks Textures/Shopsign_Book_Store_Emissive_Specular.dds
+map_Ke Textures/Shopsign_Book_Store_Emissive_Emissive.dds
+map_d Textures/Shopsign_Book_Store_Emissive_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Shopsign_Book_Store_Emissive_Normal.dds

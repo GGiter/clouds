@@ -1,0 +1,24 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl MenuSign_02_Glass
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MenuSign_02_Glass_BaseColor.dds
+map_Ks Textures/MenuSign_02_Glass_Specular.dds
+map_d Textures/MenuSign_02_Glass_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MenuSign_02_Glass_Normal.dds
+
+newmtl MenuSign_02_Mesh
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MenuSign_02_Mesh_BaseColor.dds
+map_Ks Textures/MenuSign_02_Mesh_Specular.dds
+map_d Textures/MenuSign_02_Mesh_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MenuSign_02_Mesh_Normal.dds

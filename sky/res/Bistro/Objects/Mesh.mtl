@@ -1,0 +1,57 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Paris_StringLights_01_Blue_Color_Emissive
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_StringLights_01_Blue_Color_Emissive_BaseColor.dds
+map_Ks Textures/Paris_StringLights_01_Blue_Color_Emissive_Specular.dds
+map_Ke Textures/Paris_StringLights_01_Blue_Color_Emissive_Emissive.dds
+map_d Textures/Paris_StringLights_01_Blue_Color_Emissive_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_StringLights_01_Blue_Color_Emissive_Normal.dds
+
+newmtl Paris_StringLights_01_Orange_Color_Emissive
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_StringLights_01_Orange_Color_Emissive_BaseColor.dds
+map_Ks Textures/Paris_StringLights_01_Orange_Color_Emissive_Specular.dds
+map_Ke Textures/Paris_StringLights_01_Orange_Color_Emissive_Emissive.dds
+map_d Textures/Paris_StringLights_01_Orange_Color_Emissive_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_StringLights_01_Orange_Color_Emissive_Normal.dds
+
+newmtl Paris_StringLights_01_Pink_Color_Emissive
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_StringLights_01_Pink_Color_Emissive_BaseColor.dds
+map_Ks Textures/Paris_StringLights_01_Pink_Color_Emissive_Specular.dds
+map_Ke Textures/Paris_StringLights_01_Pink_Color_Emissive_Emissive.dds
+map_d Textures/Paris_StringLights_01_Pink_Color_Emissive_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_StringLights_01_Pink_Color_Emissive_Normal.dds
+
+newmtl Paris_StringLights_01_White_Color_Emissive
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_StringLights_01_White_Color_Emissive_BaseColor.dds
+map_Ks Textures/Paris_StringLights_01_White_Color_Emissive_Specular.dds
+map_Ke Textures/Paris_StringLights_01_White_Color_Emissive_Emissive.dds
+map_d Textures/Paris_StringLights_01_White_Color_Emissive_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_StringLights_01_White_Color_Emissive_Normal.dds
+
+newmtl Stringlights
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Stringlights_BaseColor.dds
+map_Ks Textures/Stringlights_Specular.dds
+map_d Textures/Stringlights_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Stringlights_Normal.dds

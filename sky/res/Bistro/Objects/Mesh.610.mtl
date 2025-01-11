@@ -1,0 +1,13 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl MASTER_Concrete_Grooved
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/MASTER_Concrete_Grooved_BaseColor.dds
+map_Ks Textures/MASTER_Concrete_Grooved_Specular.dds
+map_d Textures/MASTER_Concrete_Grooved_BaseColor.dds
+map_Bump -bm 1.000000 Textures/MASTER_Concrete_Grooved_Normal.dds

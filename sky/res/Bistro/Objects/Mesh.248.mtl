@@ -1,0 +1,35 @@
+# Blender 3.6.18 MTL File: 'None'
+# www.blender.org
+
+newmtl Paris_LiquorBottle_01_Caps
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_LiquorBottle_01_Caps_BaseColor.dds
+map_Ks Textures/Paris_LiquorBottle_01_Caps_Specular.dds
+map_d Textures/Paris_LiquorBottle_01_Caps_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_LiquorBottle_01_Caps_Normal.dds
+
+newmtl Paris_LiquorBottle_01_Glass_Wine
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_LiquorBottle_01_Glass_Wine_BaseColor.dds
+map_Ks Textures/Paris_LiquorBottle_01_Glass_Wine_Specular.dds
+map_d Textures/Paris_LiquorBottle_01_Glass_Wine_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_LiquorBottle_01_Glass_Wine_Normal.dds
+
+newmtl Paris_LiquorBottle_01_Labels
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 3
+map_Kd Textures/Paris_LiquorBottle_01_Labels_BaseColor.dds
+map_d Textures/Paris_LiquorBottle_01_Labels_BaseColor.dds
+map_Bump -bm 1.000000 Textures/Paris_LiquorBottle_01_Labels_Normal.dds

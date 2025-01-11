@@ -1,0 +1,17 @@
+# Blender 3.6.18
+# www.blender.org
+mtllib Mesh.885.mtl
+o Bistro_Research_Exterior_Paris_Building_01_paris_buildi_d2a4d7c
+v 1.796058 1.544866 -12.958708
+v 1.796058 0.814386 -12.958706
+v 0.007509 1.544872 -9.641385
+v 0.007509 0.814393 -9.641383
+vn -0.8774 -0.0039 -0.4797
+vt -0.088867 0.644287
+vt -0.088867 0.416016
+vt 1.088867 0.644287
+vt 1.088867 0.416016
+s 1
+usemtl MASTER_Wood_Painted3
+f 1/1/1 2/2/1 3/3/1
+f 2/2/1 4/4/1 3/3/1
